@@ -27,6 +27,10 @@ export const SwaggerJson: SwaggerTypes = {
         {
             "url": "http://localhost:3000",
             "description": "Development Server | Local Server"
+        },
+        {
+            "url": "http://localhost:4000",
+            "description": "Development Server | Local Server"
         }
     ],
     paths: {
@@ -79,6 +83,26 @@ export const SwaggerJson: SwaggerTypes = {
                         }
                     },
                 }
+            },
+        },
+        "/users/all": {
+            get: {
+                summary: "Get all users",
+                operationId: "getUsers",
+                tags: ["Users"],
+                responses: {
+                    "200": {
+                        description: "List of users",
+                        content: {
+                            "application/json": {
+                                schema: wrapSchemaWithResponse({
+                                    type: "array",
+                                    items: { "$ref": "#/components/schemas/User" }
+                                })
+                            }
+                        }
+                    },
+                },
             },
         }
     },
