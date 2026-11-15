@@ -7,16 +7,27 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Loader2 } from "lucide-react"
 
+interface TestResult {
+  status: number | string
+  data: unknown
+}
+
+interface PersonData {
+  name: string
+  sexe: string
+  adulte: boolean
+}
+
 export default function PeopleTestPanel() {
-    const [result, setResult] = useState<any>(null)
+    const [result, setResult] = useState<TestResult | null>(null)
     const [loading, setLoading] = useState(false)
     const [personId, setPersonId] = useState("")
     const [personRifd, setPersonRifd] = useState("")
-    const [personData, setPersonData] = useState({ name: "Test Person", sexe: "MASCULIN", adulte: true })
+    const [personData, setPersonData] = useState<PersonData>({ name: "Test Person", sexe: "MASCULIN", adulte: true })
 
     const baseUrl = "http://localhost:4000"
 
-    const runTest = async (method: string, path: string, body?: any) => {
+    const runTest = async (method: string, path: string, body?: unknown) => {
         setLoading(true)
         setResult(null)
         try {
@@ -33,8 +44,9 @@ export default function PeopleTestPanel() {
                 data = { statusText: res.statusText }
             }
             setResult({ status: res.status, data })
-        } catch (err: any) {
-            setResult({ status: "Error", data: err.message })
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err)
+            setResult({ status: "Error", data: message })
         } finally {
             setLoading(false)
         }

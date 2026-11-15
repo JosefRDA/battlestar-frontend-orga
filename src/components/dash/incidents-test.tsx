@@ -7,16 +7,6 @@ import { Input } from "@/components/ui/input"
 
 const API_BASE = "http://localhost:4000/incidents"
 
-interface Incident {
-  id: string
-  name: string
-  description: string | null
-  picture: string | null
-  partsNeededToFixIds: string[]
-  createdAt: string
-  updatedAt: string
-}
-
 interface ApiResponse<T> {
   data?: T
   error?: string
@@ -93,9 +83,9 @@ function ListIncidents() {
           <p className="text-xs text-zinc-500">{response.message || (response.error ? "Error" : "Success")}</p>
           {response.error ? (
             <p className="text-red-500 text-sm">{response.error}</p>
-          ) : response.data && (
+          ) : response.data ? (
             <JsonDisplay data={response.data} />
-          )}
+          ) : null}
         </div>
       )}
     </TestCard>
@@ -129,9 +119,9 @@ function GetIncident() {
           <p className="text-xs text-zinc-500">{response.message || (response.error ? "Error" : "Success")}</p>
           {response.error ? (
             <p className="text-red-500 text-sm">{response.error}</p>
-          ) : response.data && (
+          ) : response.data ? (
             <JsonDisplay data={response.data} />
-          )}
+          ) : null}
         </div>
       )}
     </TestCard>
@@ -210,9 +200,9 @@ function CreateIncident() {
           <p className="text-xs text-zinc-500">{response.message || (response.error ? "Error" : "Success")}</p>
           {response.error ? (
             <p className="text-red-500 text-sm">{response.error}</p>
-          ) : response.data && (
+          ) : response.data ? (
             <JsonDisplay data={response.data} />
-          )}
+          ) : null}
         </div>
       )}
     </TestCard>
@@ -302,9 +292,9 @@ function PatchIncident() {
           <p className="text-xs text-zinc-500">{response.message || (response.error ? "Error" : "Success")}</p>
           {response.error ? (
             <p className="text-red-500 text-sm">{response.error}</p>
-          ) : response.data && (
+          ) : response.data ? (
             <JsonDisplay data={response.data} />
-          )}
+          ) : null}
         </div>
       )}
     </TestCard>
@@ -394,9 +384,9 @@ function PutIncident() {
           <p className="text-xs text-zinc-500">{response.message || (response.error ? "Error" : "Success")}</p>
           {response.error ? (
             <p className="text-red-500 text-sm">{response.error}</p>
-          ) : response.data && (
+          ) : response.data ? (
             <JsonDisplay data={response.data} />
-          )}
+          ) : null}
         </div>
       )}
     </TestCard>

@@ -1,6 +1,6 @@
 "use client";
 
-import { AreaChartIcon as ChartArea, BookMarked, Server, Bug, Wrench, Users, HeartPulse, Stethoscope, Activity, Database, HardDrive, Network, Settings } from "lucide-react";
+import { AreaChartIcon as ChartArea, Server, Bug, Wrench, Users, HeartPulse, Stethoscope, Activity, HardDrive, Settings } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import MainStats from "./stats/global";

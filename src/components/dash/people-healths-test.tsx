@@ -2,9 +2,8 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 const API_BASE = "http://localhost:4000"
 
@@ -65,12 +64,12 @@ export default function PeopleHealthsTestPanel() {
           {result.success ? "Success" : "Error"} {result.status ? `(${result.status})` : ""}
         </div>
         {result.error && <pre className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded text-red-700 dark:text-red-300 overflow-auto max-h-40">{result.error}</pre>}
-        {result.data && (
+        {result.data ? (
           <details className="mt-2">
             <summary className="cursor-pointer text-muted-foreground">View response</summary>
             <pre className="mt-2 p-2 bg-muted rounded text-xs overflow-auto max-h-40">{JSON.stringify(result.data, null, 2)}</pre>
           </details>
-        )}
+        ) : null}
       </div>
     )
   }

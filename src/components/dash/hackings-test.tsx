@@ -1,23 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2, CheckCircle, XCircle, Trash2, Play, Stop, Edit, Plus, Eye, RefreshCw } from "lucide-react"
+import { Loader2, CheckCircle, XCircle, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
 const API_BASE = "http://localhost:4000/hacks"
-
-interface Hacking {
-  id: string
-  createdAt: string
-  stopedAt: string
-  testOrga: boolean
-}
-
-interface ApiResponse<T> {
-  data: T
-}
 
 interface TestCase {
   id: string
@@ -143,7 +132,7 @@ function TestCard({ testCase }: { testCase: TestCase }) {
   const runTest = async () => {
     setResponse({ status: "loading" })
     try {
-      let url = `${API_BASE}${testCase.endpoint.replace(":id", id)}`
+      const url = `${API_BASE}${testCase.endpoint.replace(":id", id)}`
       const options: RequestInit = {
         method: testCase.method,
         headers: { "Content-Type": "application/json" },
@@ -270,13 +259,13 @@ function TestCard({ testCase }: { testCase: TestCase }) {
               <span>{response.error}</span>
             </div>
           )}
-          {(isSuccess || isError) && response.data && (
+          {(isSuccess || isError) && response.data ? (
             <div className="relative">
               <pre className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 text-xs overflow-x-auto max-h-64 text-zinc-900 dark:text-zinc-100">
                 {formatJson(response.data)}
               </pre>
             </div>
-          )}
+          ) : null}
         </div>
       </CardContent>
     </Card>

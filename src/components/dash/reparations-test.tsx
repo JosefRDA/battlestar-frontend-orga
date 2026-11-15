@@ -9,15 +9,6 @@ import { Label } from "@/components/ui/label"
 
 const API_BASE = "http://localhost:4000/reparations"
 
-interface Reparation {
-  id: string
-  systemId: number
-  fixed: boolean
-  createdAt: string
-  updatedAt: string
-  partsNeededToFixIds: string[]
-}
-
 interface TestCase {
   id: string
   title: string
@@ -155,7 +146,7 @@ function TestCard({ testCase }: { testCase: TestCase }) {
   const runTest = async () => {
     setResponse({ status: "loading" })
     try {
-      let url = `${API_BASE}${testCase.endpoint.replace(":id", id).replace(":systemId", systemId)}`
+      const url = `${API_BASE}${testCase.endpoint.replace(":id", id).replace(":systemId", systemId)}`
       const options: RequestInit = {
         method: testCase.method,
         headers: { "Content-Type": "application/json" },
@@ -299,13 +290,13 @@ function TestCard({ testCase }: { testCase: TestCase }) {
               <span>{response.error}</span>
             </div>
           )}
-          {(isSuccess || isError) && response.data && (
+          {(isSuccess || isError) && response.data ? (
             <div className="relative">
               <pre className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 text-xs overflow-x-auto max-h-64 text-zinc-900 dark:text-zinc-100">
                 {formatJson(response.data)}
               </pre>
             </div>
-          )}
+          ) : null}
         </div>
       </CardContent>
     </Card>
