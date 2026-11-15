@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, Copy, Check } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
@@ -58,6 +58,17 @@ export default function UsersTestPanel() {
     picture: "",
     isHacker: false,
   });
+  const [copiedField, setCopiedField] = useState<{ type: 'id' | 'rifd' | 'name'; value: string } | null>(null);
+
+  const handleCopy = async (value: string, type: 'id' | 'rifd' | 'name') => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField({ type, value });
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   // Fetch users on mount
   useEffect(() => {
@@ -316,10 +327,57 @@ export default function UsersTestPanel() {
                     className="border-b border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
-                      {user.id}
+                      {editingId === user.id ? (
+                        <Input
+                          value={editData.id as string}
+                          onChange={(e) => setEditData({ ...editData, id: e.target.value })}
+                          className="w-full"
+                          readOnly
+                        />
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span>{user.id}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(user.id, 'id')}
+                            aria-label="Copy ID"
+                          >
+                            {copiedField?.type === 'id' && copiedField?.value === user.id ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
+                      )}
                     </td>
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
-                      {user.rifd}
+                      {editingId === user.id ? (
+                        <Input
+                          value={editData.rifd as string}
+                          onChange={(e) => setEditData({ ...editData, rifd: e.target.value })}
+                          className="w-full"
+                        />
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span>{user.rifd}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(user.rifd, 'rifd')}
+                            aria-label="Copy RIFD"
+                          >
+                            {copiedField?.type === 'rifd' && copiedField?.value === user.rifd ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
+                      )}
                     </td>
                     <td className="p-3">
                       {editingId === user.id ? (
@@ -330,7 +388,22 @@ export default function UsersTestPanel() {
                           autoFocus
                         />
                       ) : (
-                        <span className="font-medium text-zinc-900 dark:text-white">{user.name}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium text-zinc-900 dark:text-white">{user.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(user.name, 'name')}
+                            aria-label="Copy Name"
+                          >
+                            {copiedField?.type === 'name' && copiedField?.value === user.name ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
                       )}
                     </td>
                     <td className="p-3">
