@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
-const API_BASE = "http://localhost:4000/incidents"
+const API_BASE = "http://localhost:4000/legacy-incidents"
 
 interface ApiResponse<T> {
   data?: T

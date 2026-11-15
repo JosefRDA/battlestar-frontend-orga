@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Loader2, XCircle, ArrowRight, RefreshCw } from "lucide-react"
 
-const API_BASE = "http://localhost:4000/parts"
+const API_BASE = "http://localhost:4000/legacy-parts"
 
 export default function PartsTestPanel() {
   const [createdPartId, setCreatedPartId] = useState<string>("")

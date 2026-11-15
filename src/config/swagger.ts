@@ -571,20 +571,20 @@ export const SwaggerJson: SwaggerTypes = {
             },
         },
 
-        // ========== REPARATIONS ==========
-        "/reparations": {
+        // ========== LEGACY REPARATIONS ==========
+        "/legacy-reparations": {
             get: {
-                summary: "List all reparations",
-                operationId: "listReparations",
-                tags: ["Reparations"],
+                summary: "List all legacy reparations",
+                operationId: "listLegacyReparations",
+                tags: ["LegacyReparations"],
                 responses: {
                     "200": {
-                        description: "List of reparations",
+                        description: "List of legacy reparations",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
                                     type: "array",
-                                    items: { "$ref": "#/components/schemas/Reparation" }
+                                    items: { "$ref": "#/components/schemas/LegacyReparation" }
                                 })
                             }
                         }
@@ -592,26 +592,26 @@ export const SwaggerJson: SwaggerTypes = {
                 },
             },
             post: {
-                summary: "Create a reparation",
-                operationId: "createReparation",
-                tags: ["Reparations"],
+                summary: "Create a legacy reparation",
+                operationId: "createLegacyReparation",
+                tags: ["LegacyReparations"],
                 requestBody: {
                     required: true,
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/CreateReparationInput"
+                                "$ref": "#/components/schemas/CreateLegacyReparationInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "201": {
-                        description: "Reparation created",
+                        description: "Legacy reparation created",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Reparation"
+                                    "$ref": "#/components/schemas/LegacyReparation"
                                 })
                             }
                         }
@@ -629,27 +629,27 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
         },
-        "/reparations/{id}": {
+        "/legacy-reparations/{id}": {
             get: {
-                summary: "Get reparation by ID",
-                operationId: "getReparation",
-                tags: ["Reparations"],
+                summary: "Get legacy reparation by ID",
+                operationId: "getLegacyReparation",
+                tags: ["LegacyReparations"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Reparation ID",
+                        description: "Legacy Reparation ID",
                         required: true,
                         schema: { type: "string" }
                     }
                 ],
                 responses: {
                     "200": {
-                        description: "Reparation found",
+                        description: "Legacy reparation found",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Reparation"
+                                    "$ref": "#/components/schemas/LegacyReparation"
                                 })
                             }
                         }
@@ -667,14 +667,14 @@ export const SwaggerJson: SwaggerTypes = {
                 },
             },
             patch: {
-                summary: "Partially update reparation",
-                operationId: "updateReparation",
-                tags: ["Reparations"],
+                summary: "Partially update legacy reparation",
+                operationId: "updateLegacyReparation",
+                tags: ["LegacyReparations"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Reparation ID",
+                        description: "Legacy Reparation ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -684,18 +684,18 @@ export const SwaggerJson: SwaggerTypes = {
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/UpdateReparationInput"
+                                "$ref": "#/components/schemas/UpdateLegacyReparationInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "200": {
-                        description: "Reparation updated",
+                        description: "Legacy reparation updated",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Reparation"
+                                    "$ref": "#/components/schemas/LegacyReparation"
                                 })
                             }
                         }
@@ -713,14 +713,14 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
             put: {
-                summary: "Fully update reparation",
-                operationId: "replaceReparation",
-                tags: ["Reparations"],
+                summary: "Fully update legacy reparation",
+                operationId: "replaceLegacyReparation",
+                tags: ["LegacyReparations"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Reparation ID",
+                        description: "Legacy Reparation ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -730,18 +730,18 @@ export const SwaggerJson: SwaggerTypes = {
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/CreateReparationInput"
+                                "$ref": "#/components/schemas/CreateLegacyReparationInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "200": {
-                        description: "Reparation updated",
+                        description: "Legacy reparation updated",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Reparation"
+                                    "$ref": "#/components/schemas/LegacyReparation"
                                 })
                             }
                         }
@@ -759,14 +759,14 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
             delete: {
-                summary: "Delete reparation",
-                operationId: "deleteReparation",
-                tags: ["Reparations"],
+                summary: "Delete legacy reparation",
+                operationId: "deleteLegacyReparation",
+                tags: ["LegacyReparations"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Reparation ID",
+                        description: "Legacy Reparation ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -786,11 +786,11 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
         },
-        "/reparations/system/{systemId}": {
+        "/legacy-reparations/system/{systemId}": {
             get: {
-                summary: "Get active reparation for system",
-                operationId: "getActiveReparationForSystem",
-                tags: ["Reparations"],
+                summary: "Get active legacy reparation for system",
+                operationId: "getActiveLegacyReparationForSystem",
+                tags: ["LegacyReparations"],
                 parameters: [
                     {
                         name: "systemId",
@@ -802,11 +802,11 @@ export const SwaggerJson: SwaggerTypes = {
                 ],
                 responses: {
                     "200": {
-                        description: "Active reparation",
+                        description: "Active legacy reparation",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Reparation"
+                                    "$ref": "#/components/schemas/LegacyReparation"
                                 })
                             }
                         }
@@ -824,27 +824,27 @@ export const SwaggerJson: SwaggerTypes = {
                 },
             },
         },
-        "/reparations/{id}/fix": {
+        "/legacy-reparations/{id}/fix": {
             post: {
-                summary: "Fix reparation",
-                operationId: "fixReparation",
-                tags: ["Reparations"],
+                summary: "Fix legacy reparation",
+                operationId: "fixLegacyReparation",
+                tags: ["LegacyReparations"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Reparation ID",
+                        description: "Legacy Reparation ID",
                         required: true,
                         schema: { type: "string" }
                     }
                 ],
                 responses: {
                     "200": {
-                        description: "Reparation fixed",
+                        description: "Legacy reparation fixed",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Reparation"
+                                    "$ref": "#/components/schemas/LegacyReparation"
                                 })
                             }
                         }
@@ -1099,20 +1099,20 @@ export const SwaggerJson: SwaggerTypes = {
             },
         },
 
-        // ========== PARTS ==========
-        "/parts": {
+        // ========== LEGACY PARTS ==========
+        "/legacy-parts": {
             get: {
-                summary: "List all parts",
-                operationId: "listParts",
-                tags: ["Parts"],
+                summary: "List all legacy parts",
+                operationId: "listLegacyParts",
+                tags: ["LegacyParts"],
                 responses: {
                     "200": {
-                        description: "List of parts",
+                        description: "List of legacy parts",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
                                     type: "array",
-                                    items: { "$ref": "#/components/schemas/Part" }
+                                    items: { "$ref": "#/components/schemas/LegacyPart" }
                                 })
                             }
                         }
@@ -1120,26 +1120,26 @@ export const SwaggerJson: SwaggerTypes = {
                 },
             },
             post: {
-                summary: "Create a part",
-                operationId: "createPart",
-                tags: ["Parts"],
+                summary: "Create a legacy part",
+                operationId: "createLegacyPart",
+                tags: ["LegacyParts"],
                 requestBody: {
                     required: true,
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/CreatePartInput"
+                                "$ref": "#/components/schemas/CreateLegacyPartInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "201": {
-                        description: "Part created",
+                        description: "Legacy part created",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Part"
+                                    "$ref": "#/components/schemas/LegacyPart"
                                 })
                             }
                         }
@@ -1157,27 +1157,27 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
         },
-        "/parts/{id}": {
+        "/legacy-parts/{id}": {
             get: {
-                summary: "Get part by ID",
-                operationId: "getPart",
-                tags: ["Parts"],
+                summary: "Get legacy part by ID",
+                operationId: "getLegacyPart",
+                tags: ["LegacyParts"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Part ID",
+                        description: "Legacy Part ID",
                         required: true,
                         schema: { type: "string" }
                     }
                 ],
                 responses: {
                     "200": {
-                        description: "Part found",
+                        description: "Legacy part found",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Part"
+                                    "$ref": "#/components/schemas/LegacyPart"
                                 })
                             }
                         }
@@ -1195,14 +1195,14 @@ export const SwaggerJson: SwaggerTypes = {
                 },
             },
             patch: {
-                summary: "Partially update part",
-                operationId: "updatePart",
-                tags: ["Parts"],
+                summary: "Partially update legacy part",
+                operationId: "updateLegacyPart",
+                tags: ["LegacyParts"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Part ID",
+                        description: "Legacy Part ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -1212,18 +1212,18 @@ export const SwaggerJson: SwaggerTypes = {
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/UpdatePartInput"
+                                "$ref": "#/components/schemas/UpdateLegacyPartInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "200": {
-                        description: "Part updated",
+                        description: "Legacy part updated",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Part"
+                                    "$ref": "#/components/schemas/LegacyPart"
                                 })
                             }
                         }
@@ -1241,14 +1241,14 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
             put: {
-                summary: "Fully update part",
-                operationId: "replacePart",
-                tags: ["Parts"],
+                summary: "Fully update legacy part",
+                operationId: "replaceLegacyPart",
+                tags: ["LegacyParts"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Part ID",
+                        description: "Legacy Part ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -1258,18 +1258,18 @@ export const SwaggerJson: SwaggerTypes = {
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/CreatePartInput"
+                                "$ref": "#/components/schemas/CreateLegacyPartInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "200": {
-                        description: "Part updated",
+                        description: "Legacy part updated",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Part"
+                                    "$ref": "#/components/schemas/LegacyPart"
                                 })
                             }
                         }
@@ -1287,14 +1287,14 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
             delete: {
-                summary: "Delete part",
-                operationId: "deletePart",
-                tags: ["Parts"],
+                summary: "Delete legacy part",
+                operationId: "deleteLegacyPart",
+                tags: ["LegacyParts"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Part ID",
+                        description: "Legacy Part ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -1315,20 +1315,20 @@ export const SwaggerJson: SwaggerTypes = {
             },
         },
 
-        // ========== INCIDENTS ==========
-        "/incidents": {
+        // ========== LEGACY INCIDENTS ==========
+        "/legacy-incidents": {
             get: {
-                summary: "List all incidents",
-                operationId: "listIncidents",
-                tags: ["Incidents"],
+                summary: "List all legacy incidents",
+                operationId: "listLegacyIncidents",
+                tags: ["LegacyIncidents"],
                 responses: {
                     "200": {
-                        description: "List of incidents",
+                        description: "List of legacy incidents",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
                                     type: "array",
-                                    items: { "$ref": "#/components/schemas/Incident" }
+                                    items: { "$ref": "#/components/schemas/LegacyIncident" }
                                 })
                             }
                         }
@@ -1336,26 +1336,26 @@ export const SwaggerJson: SwaggerTypes = {
                 },
             },
             post: {
-                summary: "Create an incident",
-                operationId: "createIncident",
-                tags: ["Incidents"],
+                summary: "Create a legacy incident",
+                operationId: "createLegacyIncident",
+                tags: ["LegacyIncidents"],
                 requestBody: {
                     required: true,
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/CreateIncidentInput"
+                                "$ref": "#/components/schemas/CreateLegacyIncidentInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "201": {
-                        description: "Incident created",
+                        description: "Legacy incident created",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Incident"
+                                    "$ref": "#/components/schemas/LegacyIncident"
                                 })
                             }
                         }
@@ -1373,27 +1373,27 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
         },
-        "/incidents/{id}": {
+        "/legacy-incidents/{id}": {
             get: {
-                summary: "Get incident by ID",
-                operationId: "getIncident",
-                tags: ["Incidents"],
+                summary: "Get legacy incident by ID",
+                operationId: "getLegacyIncident",
+                tags: ["LegacyIncidents"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Incident ID",
+                        description: "Legacy Incident ID",
                         required: true,
                         schema: { type: "string" }
                     }
                 ],
                 responses: {
                     "200": {
-                        description: "Incident found",
+                        description: "Legacy incident found",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Incident"
+                                    "$ref": "#/components/schemas/LegacyIncident"
                                 })
                             }
                         }
@@ -1411,14 +1411,14 @@ export const SwaggerJson: SwaggerTypes = {
                 },
             },
             patch: {
-                summary: "Partially update incident",
-                operationId: "updateIncident",
-                tags: ["Incidents"],
+                summary: "Partially update legacy incident",
+                operationId: "updateLegacyIncident",
+                tags: ["LegacyIncidents"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Incident ID",
+                        description: "Legacy Incident ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -1428,18 +1428,18 @@ export const SwaggerJson: SwaggerTypes = {
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/UpdateIncidentInput"
+                                "$ref": "#/components/schemas/UpdateLegacyIncidentInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "200": {
-                        description: "Incident updated",
+                        description: "Legacy incident updated",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Incident"
+                                    "$ref": "#/components/schemas/LegacyIncident"
                                 })
                             }
                         }
@@ -1457,14 +1457,14 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
             put: {
-                summary: "Fully update incident",
-                operationId: "replaceIncident",
-                tags: ["Incidents"],
+                summary: "Fully update legacy incident",
+                operationId: "replaceLegacyIncident",
+                tags: ["LegacyIncidents"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Incident ID",
+                        description: "Legacy Incident ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -1474,18 +1474,18 @@ export const SwaggerJson: SwaggerTypes = {
                     content: {
                         "application/json": {
                             schema: wrapSchemaWithResponse({
-                                "$ref": "#/components/schemas/CreateIncidentInput"
+                                "$ref": "#/components/schemas/CreateLegacyIncidentInput"
                             })
                         }
                     }
                 },
                 responses: {
                     "200": {
-                        description: "Incident updated",
+                        description: "Legacy incident updated",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
-                                    "$ref": "#/components/schemas/Incident"
+                                    "$ref": "#/components/schemas/LegacyIncident"
                                 })
                             }
                         }
@@ -1503,14 +1503,14 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
             delete: {
-                summary: "Delete incident",
-                operationId: "deleteIncident",
-                tags: ["Incidents"],
+                summary: "Delete legacy incident",
+                operationId: "deleteLegacyIncident",
+                tags: ["LegacyIncidents"],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Incident ID",
+                        description: "Legacy Incident ID",
                         required: true,
                         schema: { type: "string" }
                     }
@@ -2462,20 +2462,20 @@ export const SwaggerJson: SwaggerTypes = {
         },
 
         // ========== ADMIN ==========
-        "/admin/parts/seed": {
+        "/admin/legacy-parts/seed": {
             post: {
-                summary: "Seed parts",
-                operationId: "seedParts",
+                summary: "Seed legacy parts",
+                operationId: "seedLegacyParts",
                 tags: ["Admin"],
                 responses: {
                     "201": {
-                        description: "Parts seeded",
+                        description: "Legacy parts seeded",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
                                     type: "object",
                                     properties: {
-                                        data: { type: "array", items: { "$ref": "#/components/schemas/Part" } },
+                                        data: { type: "array", items: { "$ref": "#/components/schemas/LegacyPart" } },
                                         message: { type: "string" }
                                     }
                                 })
@@ -2495,20 +2495,20 @@ export const SwaggerJson: SwaggerTypes = {
                 },
             },
         },
-        "/admin/incidents/seed": {
+        "/admin/legacy-incidents/seed": {
             post: {
-                summary: "Seed incidents",
-                operationId: "seedIncidents",
+                summary: "Seed legacy incidents",
+                operationId: "seedLegacyIncidents",
                 tags: ["Admin"],
                 responses: {
                     "201": {
-                        description: "Incidents seeded",
+                        description: "Legacy incidents seeded",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
                                     type: "object",
                                     properties: {
-                                        data: { type: "array", items: { "$ref": "#/components/schemas/Incident" } },
+                                        data: { type: "array", items: { "$ref": "#/components/schemas/LegacyIncident" } },
                                         message: { type: "string" }
                                     }
                                 })
@@ -2580,20 +2580,20 @@ export const SwaggerJson: SwaggerTypes = {
                 }
             },
         },
-        "/admin/reparations/seed": {
+        "/admin/legacy-reparations/seed": {
             post: {
-                summary: "Seed reparations",
-                operationId: "seedReparations",
+                summary: "Seed legacy reparations",
+                operationId: "seedLegacyReparations",
                 tags: ["Admin"],
                 responses: {
                     "201": {
-                        description: "Reparations seeded",
+                        description: "Legacy reparations seeded",
                         content: {
                             "application/json": {
                                 schema: wrapSchemaWithResponse({
                                     type: "object",
                                     properties: {
-                                        data: { type: "array", items: { "$ref": "#/components/schemas/Reparation" } },
+                                        data: { type: "array", items: { "$ref": "#/components/schemas/LegacyReparation" } },
                                         message: { type: "string" }
                                     }
                                 })
@@ -2819,7 +2819,7 @@ export const SwaggerJson: SwaggerTypes = {
                     createdAt: { type: "string", format: "date-time" },
                     updatedAt: { type: "string", format: "date-time" },
                     system: { "$ref": "#/components/schemas/System" },
-                    partsNeededToFix: { type: "array", items: { "$ref": "#/components/schemas/Part" } }
+                    partsNeededToFix: { type: "array", items: { "$ref": "#/components/schemas/LegacyPart" } }
                 }
             },
             CreateReparationInput: {
@@ -2848,7 +2848,7 @@ export const SwaggerJson: SwaggerTypes = {
                     createdAt: { type: "string", format: "date-time" },
                     updatedAt: { type: "string", format: "date-time" },
                     healths: { type: "array", items: { "$ref": "#/components/schemas/SystemHealth" } },
-                    reparations: { type: "array", items: { "$ref": "#/components/schemas/Reparation" } }
+                    reparations: { type: "array", items: { "$ref": "#/components/schemas/LegacyReparation" } }
                 }
             },
             CreateSystemInput: {
@@ -2888,8 +2888,8 @@ export const SwaggerJson: SwaggerTypes = {
                     picture: { type: "string" },
                     createdAt: { type: "string", format: "date-time" },
                     updatedAt: { type: "string", format: "date-time" },
-                    canBeUsedInIncidents: { type: "array", items: { "$ref": "#/components/schemas/Incident" } },
-                    canBeUsedReparation: { type: "array", items: { "$ref": "#/components/schemas/Reparation" } }
+                    canBeUsedInIncidents: { type: "array", items: { "$ref": "#/components/schemas/LegacyIncident" } },
+                    canBeUsedReparation: { type: "array", items: { "$ref": "#/components/schemas/LegacyReparation" } }
                 }
             },
             CreatePartInput: {
@@ -2925,7 +2925,7 @@ export const SwaggerJson: SwaggerTypes = {
                     picture: { type: "string" },
                     createdAt: { type: "string", format: "date-time" },
                     updatedAt: { type: "string", format: "date-time" },
-                    partsNeededToFix: { type: "array", items: { "$ref": "#/components/schemas/Part" } }
+                    partsNeededToFix: { type: "array", items: { "$ref": "#/components/schemas/LegacyPart" } }
                 }
             },
             CreateIncidentInput: {
@@ -3068,6 +3068,106 @@ export const SwaggerJson: SwaggerTypes = {
                 properties: {
                     testOrga: { type: "boolean" },
                     stopedAt: { type: "string", format: "date-time" }
+                }
+            },
+
+            // Legacy schemas (renamed models for API versioning)
+            LegacyPart: {
+                type: "object",
+                properties: {
+                    id: { type: "string" },
+                    rifd: { type: "string" },
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    picture: { type: "string" },
+                    createdAt: { type: "string", format: "date-time" },
+                    updatedAt: { type: "string", format: "date-time" },
+                    canBeUsedInIncidents: { type: "array", items: { "$ref": "#/components/schemas/LegacyIncident" } },
+                    canBeUsedReparation: { type: "array", items: { "$ref": "#/components/schemas/LegacyReparation" } }
+                }
+            },
+            CreateLegacyPartInput: {
+                type: "object",
+                required: ["rifd", "name", "description"],
+                properties: {
+                    rifd: { type: "string" },
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    picture: { type: "string" },
+                    canBeUsedInIncidentsIds: { type: "array", items: { type: "string" } },
+                    canBeUsedInReparationIds: { type: "array", items: { type: "string" } }
+                }
+            },
+            UpdateLegacyPartInput: {
+                type: "object",
+                properties: {
+                    rifd: { type: "string" },
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    picture: { type: "string" },
+                    canBeUsedInIncidentsIds: { type: "array", items: { type: "string" } },
+                    canBeUsedInReparationIds: { type: "array", items: { type: "string" } }
+                }
+            },
+
+            LegacyIncident: {
+                type: "object",
+                properties: {
+                    id: { type: "string" },
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    picture: { type: "string" },
+                    createdAt: { type: "string", format: "date-time" },
+                    updatedAt: { type: "string", format: "date-time" },
+                    partsNeededToFix: { type: "array", items: { "$ref": "#/components/schemas/LegacyPart" } }
+                }
+            },
+            CreateLegacyIncidentInput: {
+                type: "object",
+                required: ["name"],
+                properties: {
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    picture: { type: "string" },
+                    partsNeededToFixIds: { type: "array", items: { type: "string" } }
+                }
+            },
+            UpdateLegacyIncidentInput: {
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    picture: { type: "string" },
+                    partsNeededToFixIds: { type: "array", items: { type: "string" } }
+                }
+            },
+
+            LegacyReparation: {
+                type: "object",
+                properties: {
+                    id: { type: "string" },
+                    systemId: { type: "integer" },
+                    fixed: { type: "boolean" },
+                    createdAt: { type: "string", format: "date-time" },
+                    updatedAt: { type: "string", format: "date-time" },
+                    system: { "$ref": "#/components/schemas/System" },
+                    partsNeededToFix: { type: "array", items: { "$ref": "#/components/schemas/LegacyPart" } }
+                }
+            },
+            CreateLegacyReparationInput: {
+                type: "object",
+                required: ["systemId"],
+                properties: {
+                    systemId: { type: "integer" },
+                    partsNeededToFixIds: { type: "array", items: { type: "string" } }
+                }
+            },
+            UpdateLegacyReparationInput: {
+                type: "object",
+                properties: {
+                    systemId: { type: "integer" },
+                    fixed: { type: "boolean" },
+                    partsNeededToFixIds: { type: "array", items: { type: "string" } }
                 }
             },
 

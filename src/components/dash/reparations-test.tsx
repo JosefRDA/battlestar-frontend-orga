@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const API_BASE = "http://localhost:4000/reparations"
+const API_BASE = "http://localhost:4000/legacy-reparations"
 
 interface TestCase {
   id: string

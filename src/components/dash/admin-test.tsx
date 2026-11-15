@@ -58,15 +58,15 @@ export default function AdminTestPanel({ className }: AdminTestPanelProps) {
   const tests = [
     {
       key: "seedParts",
-      label: "POST /admin/parts/seed",
+      label: "POST /admin/legacy-parts/seed",
       description: "Seed 20 default parts into the database",
-      action: () => runTest("seedParts", "/admin/parts/seed"),
+      action: () => runTest("seedParts", "/admin/legacy-parts/seed"),
     },
     {
       key: "seedIncidents",
-      label: "POST /admin/incidents/seed",
+      label: "POST /admin/legacy-incidents/seed",
       description: "Seed incidents (requires parts to be seeded first)",
-      action: () => runTest("seedIncidents", "/admin/incidents/seed"),
+      action: () => runTest("seedIncidents", "/admin/legacy-incidents/seed"),
     },
     {
       key: "seedUsers",
@@ -76,9 +76,9 @@ export default function AdminTestPanel({ className }: AdminTestPanelProps) {
     },
     {
       key: "seedReparations",
-      label: "POST /admin/reparations/seed",
+      label: "POST /admin/legacy-reparations/seed",
       description: "Seed reparations for all systems (requires systems & incidents)",
-      action: () => runTest("seedReparations", "/admin/reparations/seed"),
+      action: () => runTest("seedReparations", "/admin/legacy-reparations/seed"),
     },
     {
       key: "initSystems",
