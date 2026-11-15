@@ -2,7 +2,6 @@
 
 import { AreaChartIcon as ChartArea, Server, Bug, Wrench, Users, HeartPulse, Stethoscope, Activity, HardDrive, Settings } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import MainStats from "./stats/global";
 import AdminTestPanel from "./admin-test";
 import HackingsTestPanel from "./hackings-test";
@@ -14,6 +13,7 @@ import PeopleHealthSymptomsTestPanel from "./people-health-symptoms-test";
 import ReparationsTestPanel from "./reparations-test";
 import SystemHealthsTestPanel from "./system-healths-test";
 import SystemsTestPanel from "./systems-test";
+import UsersTestPanel from "./users-test";
 
 export default function Content() {
   return (
@@ -38,7 +38,7 @@ export default function Content() {
           <TabsTrigger value="people"><Users className="mr-2 h-4 w-4" />People</TabsTrigger>
           <TabsTrigger value="people-healths"><Stethoscope className="mr-2 h-4 w-4" />People Healths</TabsTrigger>
           <TabsTrigger value="people-health-symptoms"><HeartPulse className="mr-2 h-4 w-4" />Symptoms</TabsTrigger>
-          <TabsTrigger value="users"><Users className="mr-2 h-4 w-4" />Users (legacy)</TabsTrigger>
+          <TabsTrigger value="users"><Users className="mr-2 h-4 w-4" />Users</TabsTrigger>
         </TabsList>
 
         <TabsContent value="admin">
@@ -82,22 +82,7 @@ export default function Content() {
         </TabsContent>
 
         <TabsContent value="users">
-          <Card>
-            <CardHeader>
-              <CardTitle>Users API (Legacy)</CardTitle>
-              <CardDescription>
-                Legacy users endpoint from the old implementation. Use the Admin tab for new user management.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <p className="text-gray-600 dark:text-gray-400">
-                  The legacy users endpoint is at <code>/api/v1/users</code>.
-                  For full CRUD operations, use the Admin tab (POST /admin/users/seed, DELETE /admin/users/:id).
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <UsersTestPanel />
         </TabsContent>
       </Tabs>
     </div>
