@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
@@ -49,6 +49,15 @@ export default function UsersTestPanel() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createData, setCreateData] = useState<Partial<User>>({
+    rifd: "",
+    name: "",
+    role: [],
+    picture: "",
+    isHacker: false,
+  });
 
   // Fetch users on mount
   useEffect(() => {
@@ -162,6 +171,53 @@ export default function UsersTestPanel() {
     setDeleteConfirmId(null);
   };
 
+  const handleCreateClick = () => {
+    setCreateData({
+      rifd: "",
+      name: "",
+      role: [],
+      picture: "",
+      isHacker: false,
+    });
+    setCreateModalOpen(true);
+  };
+
+  const handleCreate = async () => {
+    setCreating(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const res = await fetch(`${API_BASE}/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(createData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      setSuccess("User created successfully");
+      setCreateModalOpen(false);
+      fetchUsers();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to create user";
+      setError(message);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleCancelCreate = () => {
+    setCreateModalOpen(false);
+    setCreateData({
+      rifd: "",
+      name: "",
+      role: [],
+      picture: "",
+      isHacker: false,
+    });
+  };
+
   const formatRole = (role: string[]) => role.join(", ") || "—";
 
   const formatPicture = (picture: string) =>
@@ -178,11 +234,15 @@ export default function UsersTestPanel() {
 
   return (
     <Card className="w-full">
-      <CardHeader>
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <CardTitle className="flex items-center gap-2">
           <Search className="h-5 w-5 text-zinc-500" />
           Users Management
         </CardTitle>
+        <Button onClick={handleCreateClick} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Nouveau User
+        </Button>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Search input */}
@@ -418,6 +478,83 @@ export default function UsersTestPanel() {
         <div className="text-xs text-zinc-500 dark:text-zinc-400 text-right">
           Showing {filteredUsers.length} of {users.length} users
         </div>
+
+        {/* Create User Modal */}
+        <Dialog open={createModalOpen} onOpenChange={handleCancelCreate}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create New User</DialogTitle>
+              <DialogDescription>
+                Fill in the details below to create a new user.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">RIFD</label>
+                <Input
+                  value={createData.rifd as string}
+                  onChange={(e) => setCreateData({ ...createData, rifd: e.target.value })}
+                  placeholder="e.g., RIFD-001"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</label>
+                <Input
+                  value={createData.name as string}
+                  onChange={(e) => setCreateData({ ...createData, name: e.target.value })}
+                  placeholder="User's full name"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Role(s)</label>
+                <Input
+                  value={(createData.role as string[])?.join(", ") || ""}
+                  onChange={(e) =>
+                    setCreateData({
+                      ...createData,
+                      role: e.target.value.split(",").map((r) => r.trim()).filter(Boolean),
+                    })
+                  }
+                  placeholder="Admin, User, Hacker"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Picture URL</label>
+                <Input
+                  value={createData.picture as string}
+                  onChange={(e) => setCreateData({ ...createData, picture: e.target.value })}
+                  placeholder="https://..."
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  <input
+                    type="checkbox"
+                    checked={createData.isHacker as boolean}
+                    onChange={(e) => setCreateData({ ...createData, isHacker: e.target.checked })}
+                    className="w-4 h-4 rounded border-zinc-300 text-primary focus:ring-primary"
+                  />
+                  <span>Hacker</span>
+                </label>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={handleCancelCreate} disabled={creating}>
+                Cancel
+              </Button>
+              <Button onClick={handleCreate} disabled={creating}>
+                {creating ? (
+                  <>
+                    <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create User"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
