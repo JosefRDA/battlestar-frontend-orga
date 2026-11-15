@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, Copy, Check } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, Copy, Check, Upload, ExternalLink } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
@@ -59,6 +59,82 @@ export default function UsersTestPanel() {
     isHacker: false,
   });
   const [copiedField, setCopiedField] = useState<{ type: 'id' | 'rifd' | 'name'; value: string } | null>(null);
+  const [pictureModalOpen, setPictureModalOpen] = useState(false);
+  const [pictureModalUrl, setPictureModalUrl] = useState("");
+  const [pictureModalUserId, setPictureModalUserId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleOpenPictureModal = (url: string, userId: string) => {
+    setPictureModalUrl(url);
+    setPictureModalUserId(userId);
+    setPictureModalOpen(true);
+  };
+
+  const handleClosePictureModal = () => {
+    setPictureModalOpen(false);
+    setPictureModalUrl("");
+    setPictureModalUserId(null);
+  };
+
+  const handleUploadPicture = async () => {
+    if (!pictureModalUserId || !fileInputRef.current) return;
+    const file = fileInputRef.current.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      // Upload image to backend
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const uploadRes = await fetch(`${API_BASE}/upload/image`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadRes.ok) {
+        const data = await uploadRes.json();
+        throw new Error(data.error || `Upload failed: ${uploadRes.status}`);
+      }
+
+      const uploadData = await uploadRes.json();
+      const newImageUrl = uploadData.data?.url;
+
+      if (!newImageUrl) throw new Error('No URL returned from upload');
+
+      // Update user's picture via PATCH
+      const patchRes = await fetch(`${API_BASE}/users/${pictureModalUserId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ picture: newImageUrl }),
+      });
+
+      if (!patchRes.ok) {
+        const data = await patchRes.json();
+        throw new Error(data.error || `Failed to update user: ${patchRes.status}`);
+      }
+
+      setSuccess('Picture uploaded and user updated successfully');
+      setPictureModalUrl(newImageUrl);
+      fetchUsers();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to upload picture';
+      setError(message);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleFileSelect = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleCopy = async (value: string, type: 'id' | 'rifd' | 'name') => {
     try {
@@ -432,7 +508,18 @@ export default function UsersTestPanel() {
                           className="w-full"
                         />
                       ) : (
-                        formatPicture(user.picture)
+                        user.picture ? (
+                          <button
+                            onClick={() => handleOpenPictureModal(user.picture, user.id)}
+                            className="flex items-center gap-1 text-primary hover:underline"
+                            aria-label="View picture"
+                          >
+                            {formatPicture(user.picture)}
+                            <ExternalLink className="h-3.5 w-3.5 text-zinc-400" />
+                          </button>
+                        ) : (
+                          formatPicture(user.picture)
+                        )
                       )}
                     </td>
                     <td className="p-3">
@@ -626,6 +713,74 @@ export default function UsersTestPanel() {
                 )}
               </Button>
             </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Picture View Modal */}
+        <Dialog open={pictureModalOpen} onOpenChange={handleClosePictureModal}>
+          <DialogContent className="max-w-[440px]">
+            <DialogHeader>
+              <DialogTitle>View Picture</DialogTitle>
+            </DialogHeader>
+            <button
+              onClick={handleClosePictureModal}
+              className="absolute top-4 right-4 p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5 text-zinc-500" />
+            </button>
+            <div className="space-y-4 pt-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Picture URL</label>
+                <Input
+                  value={pictureModalUrl}
+                  readOnly
+                  className="bg-zinc-50 dark:bg-zinc-800"
+                />
+              </div>
+              {pictureModalUrl && (
+                <div className="relative w-[400px] h-[400px] mx-auto rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={pictureModalUrl}
+                    alt="User picture"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
+              )}
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={handleClosePictureModal}
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="default"
+                  className="gap-2"
+                  onClick={handleFileSelect}
+                  disabled={uploading}
+                >
+                  <Upload className="h-4 w-4" />
+                  {uploading ? (
+                    <>
+                      <Loader2 className="animate-spin h-4 w-4" />
+                      Uploading...
+                    </>
+                  ) : (
+                    "Uploader"
+                  )}
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleUploadPicture}
+                  className="hidden"
+                  id="picture-upload-input"
+                />
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </CardContent>
