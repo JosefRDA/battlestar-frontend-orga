@@ -6,9 +6,6 @@ import {
   Menu,
   Home,
   HeartPulse,
-  Send,
-  MessageCircleMore,
-  Github
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { Main } from "@/config/site"

@@ -6,7 +6,12 @@ import MainStats from "./stats/global";
 import AdminTestPanel from "./admin-test";
 import HackingsTestPanel from "./hackings-test";
 import IncidentsTestPanel from "./incidents-test";
-import PartsTestPanel from "./parts-test";
+import PartsNewTestPanel from "./parts-new-test"; // New parts model (replaces legacy parts-test)
+import PartTypesTestPanel from "./part-types-test";
+import PartPlacesTestPanel from "./part-places-test";
+import PartEventsTestPanel from "./part-events-test";
+import TerminalsTestPanel from "./terminals-test";
+import SpaceShipsTestPanel from "./space-ships-test";
 import PeopleTestPanel from "./people-test";
 import PeopleHealthsTestPanel from "./people-healths-test";
 import PeopleHealthSymptomsTestPanel from "./people-health-symptoms-test";
@@ -27,11 +32,16 @@ export default function Content() {
       </div>
 
       <Tabs defaultValue="admin" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-11">
+        <TabsList className="flex flex-wrap gap-1">
           <TabsTrigger value="admin"><Settings className="mr-2 h-4 w-4" />Admin</TabsTrigger>
           <TabsTrigger value="hackings"><Bug className="mr-2 h-4 w-4" />Hackings</TabsTrigger>
           <TabsTrigger value="incidents"><Activity className="mr-2 h-4 w-4" />Incidents</TabsTrigger>
           <TabsTrigger value="parts"><HardDrive className="mr-2 h-4 w-4" />Parts</TabsTrigger>
+          <TabsTrigger value="part-types"><HardDrive className="mr-2 h-4 w-4" />PartTypes</TabsTrigger>
+          <TabsTrigger value="part-places"><HardDrive className="mr-2 h-4 w-4" />PartPlaces</TabsTrigger>
+          <TabsTrigger value="part-events"><Activity className="mr-2 h-4 w-4" />PartEvents</TabsTrigger>
+          <TabsTrigger value="terminals"><Server className="mr-2 h-4 w-4" />Terminals</TabsTrigger>
+          <TabsTrigger value="space-ships"><Server className="mr-2 h-4 w-4" />SpaceShips</TabsTrigger>
           <TabsTrigger value="reparations"><Wrench className="mr-2 h-4 w-4" />Reparations</TabsTrigger>
           <TabsTrigger value="systems"><Server className="mr-2 h-4 w-4" />Systems</TabsTrigger>
           <TabsTrigger value="system-healths"><HeartPulse className="mr-2 h-4 w-4" />System Healths</TabsTrigger>
@@ -54,7 +64,27 @@ export default function Content() {
         </TabsContent>
 
         <TabsContent value="parts">
-          <PartsTestPanel />
+          <PartsNewTestPanel />
+        </TabsContent>
+
+        <TabsContent value="part-types">
+          <PartTypesTestPanel />
+        </TabsContent>
+
+        <TabsContent value="part-places">
+          <PartPlacesTestPanel />
+        </TabsContent>
+
+        <TabsContent value="part-events">
+          <PartEventsTestPanel />
+        </TabsContent>
+
+        <TabsContent value="terminals">
+          <TerminalsTestPanel />
+        </TabsContent>
+
+        <TabsContent value="space-ships">
+          <SpaceShipsTestPanel />
         </TabsContent>
 
         <TabsContent value="reparations">
