@@ -91,7 +91,7 @@ export default function UsersTestPanel() {
       const formData = new FormData();
       formData.append('image', file);
 
-      const uploadRes = await fetch(`${API_BASE}/upload/image`, {
+      const uploadRes = await fetch(`${API_BASE}/uploads/image`, {
         method: 'POST',
         body: formData,
       });
