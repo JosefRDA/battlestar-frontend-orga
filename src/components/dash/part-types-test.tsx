@@ -13,7 +13,48 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Loader2, Save, Plus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Edit2, Trash2, Loader2, Save, Plus, ChevronDown } from "lucide-react";
+
+const SystemSelect = ({ value, onChange, systems }: { value: string; onChange: (systemId: string) => void; systems: System[] }) => {
+  const currentSystem = systems.find((s) => s.id === value);
+  const displayValue = currentSystem?.name || (value ? "—" : "[Aucun]");
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+          <span>{displayValue}</span>
+          <ChevronDown className="h-3 w-3 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+        <DropdownMenuItem
+          onClick={() => onChange("")}
+          className={value === "" ? "bg-accent" : ""}
+        >
+          [Aucun]
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {systems.map((sys) => (
+          <DropdownMenuItem
+            key={sys.id}
+            onClick={() => onChange(sys.id)}
+            className={value === sys.id ? "bg-accent" : ""}
+          >
+            {sys.name}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 const API_BASE = "http://localhost:4000";
 
@@ -26,13 +67,24 @@ interface PartType {
   updatedAt: string;
 }
 
+interface System {
+  id: string;
+  name: string;
+  order: number;
+}
+
 interface PartTypesResponse {
   data: PartType[];
+}
+
+interface SystemsResponse {
+  data: System[];
 }
 
 export default function PartTypesTestPanel() {
   const [partTypes, setPartTypes] = useState<PartType[]>([]);
   const [filteredPartTypes, setFilteredPartTypes] = useState<PartType[]>([]);
+  const [systems, setSystems] = useState<System[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -42,10 +94,22 @@ export default function PartTypesTestPanel() {
   const [success, setSuccess] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [createData, setCreateData] = useState({ name: "", description: "" });
+  const [createData, setCreateData] = useState({ name: "", description: "", systemId: "" });
+
+  const fetchSystems = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/systems`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: SystemsResponse = await res.json();
+      setSystems(data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch systems:", err);
+    }
+  };
 
   useEffect(() => {
     fetchPartTypes();
+    fetchSystems();
   }, []);
 
   const fetchPartTypes = async () => {
@@ -125,7 +189,7 @@ export default function PartTypesTestPanel() {
       if (!res.ok) throw new Error("Failed to create");
       setSuccess("Part type created");
       setCreateModalOpen(false);
-      setCreateData({ name: "", description: "" });
+      setCreateData({ name: "", description: "", systemId: "" });
       fetchPartTypes();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create");
@@ -159,48 +223,63 @@ export default function PartTypesTestPanel() {
               <th className="text-left p-2">ID</th>
               <th className="text-left p-2">Name</th>
               <th className="text-left p-2">Description</th>
+              <th className="text-left p-2">Système lié</th>
               <th className="text-right p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={4} className="text-center p-4"><Loader2 className="animate-spin inline" /></td></tr>
+              <tr><td colSpan={5} className="text-center p-4"><Loader2 className="animate-spin inline" /></td></tr>
             ) : (
-              filteredPartTypes.map((pt) => (
-                <tr key={pt.id} className="border-b">
-                  <td className="p-2 font-mono">{pt.id}</td>
-                  <td className="p-2">
-                    {editingId === pt.id ? <Input value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} /> : pt.name}
-                  </td>
-                  <td className="p-2">
-                    {editingId === pt.id ? <Input value={editData.description} onChange={(e) => setEditData({...editData, description: e.target.value})} /> : pt.description}
-                  </td>
-                  <td className="p-2 text-right">
-                    {editingId === pt.id ? (
-                      <Button size="sm" onClick={() => handleSave(pt.id)}><Save className="h-4 w-4" /></Button>
-                    ) : (
-                      <>
-                        <Button variant="ghost" size="sm" onClick={() => handleEditClick(pt)}><Edit2 className="h-4 w-4" /></Button>
-                        <Dialog open={deleteConfirmId === pt.id} onOpenChange={setDeleteConfirmId}>
-                          <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm"><Trash2 className="h-4 w-4 text-red-500" /></Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>Delete Part Type</DialogTitle>
-                              <DialogDescription>Are you sure you want to delete this part type? This cannot be undone.</DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                              <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
-                              <Button variant="destructive" onClick={handleConfirmDelete}>Delete</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))
+              filteredPartTypes.map((pt) => {
+                const system = systems.find((s) => s.id === pt.systemId);
+                return (
+                  <tr key={pt.id} className="border-b">
+                    <td className="p-2 font-mono">{pt.id}</td>
+                    <td className="p-2">
+                      {editingId === pt.id ? <Input value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} /> : pt.name}
+                    </td>
+                    <td className="p-2">
+                      {editingId === pt.id ? <Input value={editData.description} onChange={(e) => setEditData({...editData, description: e.target.value})} /> : pt.description}
+                    </td>
+                    <td className="p-2">
+                      {editingId === pt.id ? (
+                        <SystemSelect
+                          value={editData.systemId || ""}
+                          onChange={(systemId) => setEditData({...editData, systemId: systemId || undefined})}
+                          systems={systems}
+                        />
+                      ) : (
+                        system?.name || "—"
+                      )}
+                    </td>
+                    <td className="p-2 text-right">
+                      {editingId === pt.id ? (
+                        <Button size="sm" onClick={() => handleSave(pt.id)}><Save className="h-4 w-4" /></Button>
+                      ) : (
+                        <>
+                          <Button variant="ghost" size="sm" onClick={() => handleEditClick(pt)}><Edit2 className="h-4 w-4" /></Button>
+                          <Dialog open={deleteConfirmId === pt.id} onOpenChange={(open) => setDeleteConfirmId(open ? pt.id : null)}>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="sm"><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>Delete Part Type</DialogTitle>
+                                <DialogDescription>Are you sure you want to delete this part type? This cannot be undone.</DialogDescription>
+                              </DialogHeader>
+                              <DialogFooter>
+                                <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
+                                <Button variant="destructive" onClick={handleConfirmDelete}>Delete</Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -211,6 +290,14 @@ export default function PartTypesTestPanel() {
           <DialogHeader><DialogTitle>Create Part Type</DialogTitle></DialogHeader>
           <Input placeholder="Name" value={createData.name} onChange={(e) => setCreateData({...createData, name: e.target.value})} />
           <Input placeholder="Description" value={createData.description} onChange={(e) => setCreateData({...createData, description: e.target.value})} />
+          <div className="pt-2">
+            <label className="text-xs text-muted-foreground mb-1 block">Système lié</label>
+            <SystemSelect
+              value={createData.systemId}
+              onChange={(systemId) => setCreateData({...createData, systemId})}
+              systems={systems}
+            />
+          </div>
           <DialogFooter>
             <Button onClick={handleCreate} disabled={creating}>{creating ? "Creating..." : "Save"}</Button>
           </DialogFooter>
