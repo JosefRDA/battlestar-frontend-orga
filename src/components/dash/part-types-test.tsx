@@ -21,7 +21,6 @@ interface PartType {
   id: string;
   name: string;
   description: string;
-  icon: string;
   systemId?: string;
   createdAt: string;
   updatedAt: string;
@@ -43,7 +42,7 @@ export default function PartTypesTestPanel() {
   const [success, setSuccess] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [createData, setCreateData] = useState({ name: "", description: "", icon: "" });
+  const [createData, setCreateData] = useState({ name: "", description: "" });
 
   useEffect(() => {
     fetchPartTypes();
@@ -74,7 +73,6 @@ export default function PartTypesTestPanel() {
         (p) =>
           p.name.toLowerCase().includes(term) ||
           p.description.toLowerCase().includes(term) ||
-          p.icon.toLowerCase().includes(term) ||
           p.id.toLowerCase().includes(term)
       )
     );
@@ -82,7 +80,7 @@ export default function PartTypesTestPanel() {
 
   const handleEditClick = (pt: PartType) => {
     setEditingId(pt.id);
-    setEditData({ name: pt.name, description: pt.description, icon: pt.icon, systemId: pt.systemId });
+    setEditData({ name: pt.name, description: pt.description, systemId: pt.systemId });
   };
 
   const handleSave = async (id: string) => {
@@ -127,7 +125,7 @@ export default function PartTypesTestPanel() {
       if (!res.ok) throw new Error("Failed to create");
       setSuccess("Part type created");
       setCreateModalOpen(false);
-      setCreateData({ name: "", description: "", icon: "" });
+      setCreateData({ name: "", description: "" });
       fetchPartTypes();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create");
@@ -146,7 +144,7 @@ export default function PartTypesTestPanel() {
       </CardHeader>
       <CardContent className="space-y-4">
         <Input
-          placeholder="Search name, description, icon, ID..."
+          placeholder="Search name, description, ID..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -161,13 +159,12 @@ export default function PartTypesTestPanel() {
               <th className="text-left p-2">ID</th>
               <th className="text-left p-2">Name</th>
               <th className="text-left p-2">Description</th>
-              <th className="text-left p-2">Icon</th>
               <th className="text-right p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="text-center p-4"><Loader2 className="animate-spin inline" /></td></tr>
+              <tr><td colSpan={4} className="text-center p-4"><Loader2 className="animate-spin inline" /></td></tr>
             ) : (
               filteredPartTypes.map((pt) => (
                 <tr key={pt.id} className="border-b">
@@ -177,9 +174,6 @@ export default function PartTypesTestPanel() {
                   </td>
                   <td className="p-2">
                     {editingId === pt.id ? <Input value={editData.description} onChange={(e) => setEditData({...editData, description: e.target.value})} /> : pt.description}
-                  </td>
-                  <td className="p-2">
-                    {editingId === pt.id ? <Input value={editData.icon} onChange={(e) => setEditData({...editData, icon: e.target.value})} /> : pt.icon}
                   </td>
                   <td className="p-2 text-right">
                     {editingId === pt.id ? (
@@ -217,7 +211,6 @@ export default function PartTypesTestPanel() {
           <DialogHeader><DialogTitle>Create Part Type</DialogTitle></DialogHeader>
           <Input placeholder="Name" value={createData.name} onChange={(e) => setCreateData({...createData, name: e.target.value})} />
           <Input placeholder="Description" value={createData.description} onChange={(e) => setCreateData({...createData, description: e.target.value})} />
-          <Input placeholder="Icon" value={createData.icon} onChange={(e) => setCreateData({...createData, icon: e.target.value})} />
           <DialogFooter>
             <Button onClick={handleCreate} disabled={creating}>{creating ? "Creating..." : "Save"}</Button>
           </DialogFooter>

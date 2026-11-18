@@ -4581,7 +4581,6 @@ export const SwaggerJson: SwaggerTypes = {
           id: { type: "string" },
           name: { type: "string" },
           description: { type: "string" },
-          icon: { type: "string" },
           systemId: { type: "string", nullable: true },
           createdAt: { type: "string", format: "date-time" },
           updatedAt: { type: "string", format: "date-time" },
@@ -4594,11 +4593,10 @@ export const SwaggerJson: SwaggerTypes = {
       },
       CreatePartTypeInput: {
         type: "object",
-        required: ["name", "description", "icon"],
+        required: ["name", "description"],
         properties: {
           name: { type: "string" },
           description: { type: "string" },
-          icon: { type: "string" },
           systemId: { type: "string" },
         },
       },
@@ -4607,7 +4605,6 @@ export const SwaggerJson: SwaggerTypes = {
         properties: {
           name: { type: "string" },
           description: { type: "string" },
-          icon: { type: "string" },
           systemId: { type: "string" },
         },
       },
