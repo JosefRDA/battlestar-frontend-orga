@@ -21,8 +21,6 @@ interface PartPlace {
   id: string;
   name: string;
   type: "Monte" | "Reserve" | "Autre";
-  createdAt: string;
-  updatedAt: string;
 }
 
 interface PartPlacesResponse {
@@ -252,15 +250,13 @@ export default function PartPlacesTestPanel() {
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">ID</th>
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Name</th>
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Type</th>
-                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Created At</th>
-                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Updated At</th>
                 <th className="text-right p-3 font-medium text-zinc-500 dark:text-zinc-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={4} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     <div className="flex items-center justify-center gap-2">
                       <Loader2 className="animate-spin h-5 w-5" />
                       Loading part places...
@@ -269,7 +265,7 @@ export default function PartPlacesTestPanel() {
                 </tr>
               ) : filteredPartPlaces.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={4} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     {searchTerm ? "No part places match your search" : "No part places found"}
                   </td>
                 </tr>
@@ -332,12 +328,6 @@ export default function PartPlacesTestPanel() {
                           </span>
                         </span>
                       )}
-                    </td>
-                    <td className="p-3 text-xs text-zinc-500 dark:text-zinc-400">
-                      {partPlace.createdAt ? new Date(partPlace.createdAt).toLocaleDateString() : "—"}
-                    </td>
-                    <td className="p-3 text-xs text-zinc-500 dark:text-zinc-400">
-                      {partPlace.updatedAt ? new Date(partPlace.updatedAt).toLocaleDateString() : "—"}
                     </td>
                     <td className="p-3 text-right">
                       {editingId === partPlace.id ? (

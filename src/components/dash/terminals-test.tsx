@@ -13,22 +13,63 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 const API_BASE = "http://localhost:4000";
+
+interface Spaceship {
+  id: string;
+  name: string;
+}
+
+interface SpaceShipsResponse {
+  data: Spaceship[];
+}
 
 interface Terminal {
   id: string;
   name: string;
   userAgent: string;
   spaceShipId?: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 interface TerminalsResponse {
   data: Terminal[];
 }
+
+const SpaceshipSelect = ({ value, onChange, spaceships }: { value: string; onChange: (spaceShipId: string) => void; spaceships: Spaceship[] }) => {
+  const currentSpaceship = spaceships.find((s) => s.id === value);
+  const displayValue = currentSpaceship?.name || (value ? "—" : "[Aucun]");
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+          <span>{displayValue}</span>
+          <ChevronDown className="h-3 w-3 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+        <DropdownMenuItem onClick={() => onChange("")} className={value === "" ? "bg-accent" : ""}>
+          [Aucun]
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {spaceships.map((ship) => (
+          <DropdownMenuItem key={ship.id} onClick={() => onChange(ship.id)} className={value === ship.id ? "bg-accent" : ""}>
+            {ship.name}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 export default function TerminalsTestPanel() {
   const [terminals, setTerminals] = useState<Terminal[]>([]);
@@ -49,10 +90,24 @@ export default function TerminalsTestPanel() {
     userAgent: "",
     spaceShipId: "",
   });
+  const [spaceships, setSpaceships] = useState<Spaceship[]>([]);
+
+  // Fetch spaceships on mount
+  const fetchSpaceships = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/space-ships`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: SpaceShipsResponse = await res.json();
+      setSpaceships(data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch spaceships:", err);
+    }
+  };
 
   // Fetch terminals on mount
   useEffect(() => {
     fetchTerminals();
+    fetchSpaceships();
   }, []);
 
   const fetchTerminals = async () => {
@@ -94,6 +149,7 @@ export default function TerminalsTestPanel() {
   const handleEditClick = (terminal: Terminal) => {
     setEditingId(terminal.id);
     setEditData({
+      id: terminal.id,
       name: terminal.name,
       userAgent: terminal.userAgent,
       spaceShipId: terminal.spaceShipId || "",
@@ -267,16 +323,14 @@ export default function TerminalsTestPanel() {
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">ID</th>
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Name</th>
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">User Agent</th>
-                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">SpaceShip ID</th>
-                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Created At</th>
-                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Updated At</th>
+                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Spaceship</th>
                 <th className="text-right p-3 font-medium text-zinc-500 dark:text-zinc-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={5} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     <div className="flex items-center justify-center gap-2">
                       <Loader2 className="animate-spin h-5 w-5" />
                       Loading terminals...
@@ -285,7 +339,7 @@ export default function TerminalsTestPanel() {
                 </tr>
               ) : filteredTerminals.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={5} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     {searchTerm ? "No terminals match your search" : "No terminals found"}
                   </td>
                 </tr>
@@ -297,12 +351,7 @@ export default function TerminalsTestPanel() {
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
                       {editingId === terminal.id ? (
-                        <Input
-                          value={editData.id as string}
-                          onChange={(e) => setEditData({ ...editData, id: e.target.value })}
-                          className="w-full"
-                          readOnly
-                        />
+                        <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-xs">{terminal.id}</span>
                       ) : (
                         terminal.id
                       )}
@@ -332,38 +381,15 @@ export default function TerminalsTestPanel() {
                     </td>
                     <td className="p-3">
                       {editingId === terminal.id ? (
-                        <Input
+                        <SpaceshipSelect
                           value={editData.spaceShipId as string}
-                          onChange={(e) => setEditData({ ...editData, spaceShipId: e.target.value })}
-                          placeholder="Optional"
-                          className="w-full"
+                          onChange={(spaceShipId) => setEditData({ ...editData, spaceShipId })}
+                          spaceships={spaceships}
                         />
                       ) : (
-                        terminal.spaceShipId || "—"
-                      )}
-                    </td>
-                    <td className="p-3 text-sm text-zinc-500 dark:text-zinc-400">
-                      {editingId === terminal.id ? (
-                        <Input
-                          value={editData.createdAt as string}
-                          onChange={(e) => setEditData({ ...editData, createdAt: e.target.value })}
-                          className="w-full"
-                          readOnly
-                        />
-                      ) : (
-                        terminal.createdAt || "—"
-                      )}
-                    </td>
-                    <td className="p-3 text-sm text-zinc-500 dark:text-zinc-400">
-                      {editingId === terminal.id ? (
-                        <Input
-                          value={editData.updatedAt as string}
-                          onChange={(e) => setEditData({ ...editData, updatedAt: e.target.value })}
-                          className="w-full"
-                          readOnly
-                        />
-                      ) : (
-                        terminal.updatedAt || "—"
+                        <span className="text-zinc-600 dark:text-zinc-300">
+                          {spaceships.find((s) => s.id === terminal.spaceShipId)?.name || terminal.spaceShipId || "—"}
+                        </span>
                       )}
                     </td>
                     <td className="p-3 text-right">
@@ -480,11 +506,11 @@ export default function TerminalsTestPanel() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">SpaceShip ID (optional)</label>
-                <Input
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Spaceship (optional)</label>
+                <SpaceshipSelect
                   value={createData.spaceShipId as string}
-                  onChange={(e) => setCreateData({ ...createData, spaceShipId: e.target.value })}
-                  placeholder="SpaceShip ID"
+                  onChange={(spaceShipId) => setCreateData({ ...createData, spaceShipId })}
+                  spaceships={spaceships}
                 />
               </div>
             </div>

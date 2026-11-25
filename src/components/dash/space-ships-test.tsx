@@ -26,8 +26,6 @@ interface Terminal {
 interface SpaceShip {
   id: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
   terminals?: Terminal[];
 }
 
@@ -96,6 +94,7 @@ export default function SpaceShipsTestPanel() {
   const handleEditClick = (ship: SpaceShip) => {
     setEditingId(ship.id);
     setEditData({
+      id: ship.id,
       name: ship.name,
     });
   };
@@ -197,14 +196,6 @@ export default function SpaceShipsTestPanel() {
     });
   };
 
-  const formatDate = (dateStr: string) => {
-    try {
-      return new Date(dateStr).toLocaleString();
-    } catch {
-      return dateStr;
-    }
-  };
-
   const formatTerminals = (terminals: Terminal[] | undefined) =>
     terminals?.map(t => t.name).join(", ") || "—";
 
@@ -261,16 +252,14 @@ export default function SpaceShipsTestPanel() {
               <tr className="border-b border-zinc-200 dark:border-zinc-700">
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">ID</th>
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Name</th>
-                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Created At</th>
-                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Updated At</th>
-                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Terminals</th>
+                                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Terminals</th>
                 <th className="text-right p-3 font-medium text-zinc-500 dark:text-zinc-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={4} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     <div className="flex items-center justify-center gap-2">
                       <Loader2 className="animate-spin h-5 w-5" />
                       Loading space ships...
@@ -279,7 +268,7 @@ export default function SpaceShipsTestPanel() {
                 </tr>
               ) : filteredSpaceShips.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={4} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     {searchTerm ? "No space ships match your search" : "No space ships found"}
                   </td>
                 </tr>
@@ -291,12 +280,7 @@ export default function SpaceShipsTestPanel() {
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
                       {editingId === ship.id ? (
-                        <Input
-                          value={editData.id as string}
-                          onChange={(e) => setEditData({ ...editData, id: e.target.value })}
-                          className="w-full"
-                          readOnly
-                        />
+                        <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-xs">{ship.id}</span>
                       ) : (
                         <span>{ship.id}</span>
                       )}
@@ -312,12 +296,6 @@ export default function SpaceShipsTestPanel() {
                       ) : (
                         <span className="font-medium text-zinc-900 dark:text-white">{ship.name}</span>
                       )}
-                    </td>
-                    <td className="p-3 text-zinc-600 dark:text-zinc-300 text-xs">
-                      {formatDate(ship.createdAt)}
-                    </td>
-                    <td className="p-3 text-zinc-600 dark:text-zinc-300 text-xs">
-                      {formatDate(ship.updatedAt)}
                     </td>
                     <td className="p-3 text-zinc-600 dark:text-zinc-300 text-xs">
                       {formatTerminals(ship.terminals)}

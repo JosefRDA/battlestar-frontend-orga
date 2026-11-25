@@ -63,8 +63,6 @@ interface PartType {
   name: string;
   description: string;
   systemId?: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 interface System {
@@ -137,10 +135,11 @@ export default function PartTypesTestPanel() {
         (p) =>
           p.name.toLowerCase().includes(term) ||
           p.description.toLowerCase().includes(term) ||
-          p.id.toLowerCase().includes(term)
+          p.id.toLowerCase().includes(term) ||
+          (p.systemId && systems.find((s) => s.id === p.systemId)?.name.toLowerCase().includes(term))
       )
     );
-  }, [searchTerm, partTypes]);
+  }, [searchTerm, partTypes, systems]);
 
   const handleEditClick = (pt: PartType) => {
     setEditingId(pt.id);
@@ -208,7 +207,7 @@ export default function PartTypesTestPanel() {
       </CardHeader>
       <CardContent className="space-y-4">
         <Input
-          placeholder="Search name, description, ID..."
+          placeholder="Search name, description, ID, system..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />

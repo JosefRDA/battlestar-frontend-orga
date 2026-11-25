@@ -13,11 +13,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
 type PartEventType = "creation" | "destruction" | "changement_place" | "scan" | "evenement_systeme" | "changement_sante";
+
+interface Part {
+  id: string;
+  rifd: string;
+  partType?: { id: string; name: string } | null;
+}
+
+interface User {
+  id: string;
+  name: string;
+}
+
+interface PartPlace {
+  id: string;
+  name: string;
+  type: string;
+}
+
+interface Terminal {
+  id: string;
+  name: string;
+}
 
 interface PartEvent {
   id: string;
@@ -28,26 +58,34 @@ interface PartEvent {
   userId?: string | null;
   partPlaceId?: string | null;
   terminalId?: string | null;
-  part?: {
-    id: string;
-    name: string;
-  } | null;
-  author?: {
-    id: string;
-    name: string;
-  } | null;
-  place?: {
-    id: string;
-    name: string;
-  } | null;
-  terminal?: {
-    id: string;
-    name: string;
-  } | null;
+  part?: Part | null;
+  author?: User | null;
+  place?: PartPlace | null;
+  terminal?: Terminal | null;
 }
 
 interface PartEventsResponse {
   data: PartEvent[];
+}
+
+interface PartListItem {
+  id: string;
+  label: string;
+}
+
+interface UserListItem {
+  id: string;
+  label: string;
+}
+
+interface PartPlaceListItem {
+  id: string;
+  label: string;
+}
+
+interface TerminalListItem {
+  id: string;
+  label: string;
 }
 
 export default function PartEventsTestPanel() {
@@ -68,10 +106,16 @@ export default function PartEventsTestPanel() {
     partEventType: "creation",
     partHealth: 0,
   });
+  const [partList, setPartList] = useState<PartListItem[]>([]);
+  const [userList, setUserList] = useState<UserListItem[]>([]);
+  const [partPlaceList, setPartPlaceList] = useState<PartPlaceListItem[]>([]);
+  const [terminalList, setTerminalList] = useState<TerminalListItem[]>([]);
+  const [loadingRelations, setLoadingRelations] = useState(false);
 
   // Fetch part events on mount
   useEffect(() => {
     fetchPartEvents();
+    fetchLists();
   }, []);
 
   const fetchPartEvents = async () => {
@@ -93,6 +137,52 @@ export default function PartEventsTestPanel() {
     }
   };
 
+  // Fetch resource lists for dropdowns
+  const fetchLists = async () => {
+    setLoadingRelations(true);
+    setError(null);
+    try {
+      const [partsRes, usersRes, partPlacesRes, terminalsRes] = await Promise.all([
+        fetch(`${API_BASE}/parts?full=true`),
+        fetch(`${API_BASE}/users`),
+        fetch(`${API_BASE}/part-places`),
+        fetch(`${API_BASE}/terminals`),
+      ]);
+      if (!partsRes.ok || !usersRes.ok || !partPlacesRes.ok || !terminalsRes.ok) {
+        throw new Error(`HTTP ${partsRes.status} ${usersRes.status} ${partPlacesRes.status} ${terminalsRes.status}`);
+      }
+      const [partsData, usersData, partPlacesData, terminalsData] = await Promise.all([
+        partsRes.json(),
+        usersRes.json(),
+        partPlacesRes.json(),
+        terminalsRes.json(),
+      ]);
+      // Format part labels: part.id + " " + part.partType.name
+      setPartList(
+        (partsData.data || []).map((p: Part) => ({
+          id: p.id,
+          label: `${p.id} ${p.partType?.name || ""}`.trim(),
+        }))
+      );
+      // Format user labels: user.name
+      setUserList((usersData.data || []).map((u: User) => ({ id: u.id, label: u.name })));
+      // Format partPlace labels: PartPlace.name + "(" + PartPlace.type + ")"
+      setPartPlaceList(
+        (partPlacesData.data || []).map((pp: PartPlace) => ({
+          id: pp.id,
+          label: `${pp.name}(${pp.type})`,
+        }))
+      );
+      // Format terminal labels: Terminal.name
+      setTerminalList((terminalsData.data || []).map((t: Terminal) => ({ id: t.id, label: t.name })));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+    } finally {
+      setLoadingRelations(false);
+    }
+  };
+
   // Filter part events based on search term
   useEffect(() => {
     if (!searchTerm.trim()) {
@@ -105,7 +195,8 @@ export default function PartEventsTestPanel() {
             event.partEventType.toLowerCase().includes(term) ||
             event.partHealth.toString().toLowerCase().includes(term) ||
             event.id.toLowerCase().includes(term) ||
-            (event.part?.name.toLowerCase().includes(term) ?? false) ||
+            (event.part?.rifd.toLowerCase().includes(term) ?? false) ||
+            (event.part?.partType?.name.toLowerCase().includes(term) ?? false) ||
             (event.author?.name.toLowerCase().includes(term) ?? false) ||
             (event.place?.name.toLowerCase().includes(term) ?? false) ||
             (event.terminal?.name.toLowerCase().includes(term) ?? false)
@@ -119,10 +210,10 @@ export default function PartEventsTestPanel() {
     setEditData({
       partEventType: event.partEventType,
       partHealth: event.partHealth,
-      partId: event.part?.id,
-      userId: event.author?.id,
-      partPlaceId: event.place?.id,
-      terminalId: event.terminal?.id,
+      partId: event.part?.id || undefined,
+      userId: event.author?.id || undefined,
+      partPlaceId: event.place?.id || undefined,
+      terminalId: event.terminal?.id || undefined,
     });
   };
 
@@ -310,12 +401,7 @@ export default function PartEventsTestPanel() {
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
                       {editingId === event.id ? (
-                        <Input
-                          value={editData.id as string}
-                          onChange={(e) => setEditData({ ...editData, id: e.target.value })}
-                          className="w-full"
-                          readOnly
-                        />
+                        <span className="text-zinc-400">{event.id}</span>
                       ) : (
                         event.id
                       )}
@@ -350,50 +436,146 @@ export default function PartEventsTestPanel() {
                         event.partHealth
                       )}
                     </td>
-                    <td className="p-3 text-zinc-600 dark:text-zinc-300">
+                    <td className="p-3">
                       {editingId === event.id ? (
-                        <Input
-                          value={editData.partId as string || ""}
-                          onChange={(e) => setEditData({ ...editData, partId: e.target.value })}
-                          placeholder="Part ID"
-                          className="w-full"
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                              <span>
+                                {editData.partId
+                                  ? partList.find((p) => p.id === editData.partId)?.label || "—"
+                                  : "[Aucun]"}
+                              </span>
+                              <ChevronDown className="h-3 w-3 opacity-50" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+                            <DropdownMenuItem
+                              onClick={() => setEditData({ ...editData, partId: "" })}
+                              className={editData.partId === "" ? "bg-accent" : ""}
+                            >
+                              [Aucun]
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {partList.map((item) => (
+                              <DropdownMenuItem
+                                key={item.id}
+                                onClick={() => setEditData({ ...editData, partId: item.id })}
+                                className={editData.partId === item.id ? "bg-accent" : ""}
+                              >
+                                {item.label}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       ) : (
-                        event.part?.name || event.part?.id || "—"
+                        event.part?.rifd || event.part?.id || "—"
                       )}
                     </td>
-                    <td className="p-3 text-zinc-600 dark:text-zinc-300">
+                    <td className="p-3">
                       {editingId === event.id ? (
-                        <Input
-                          value={editData.userId as string || ""}
-                          onChange={(e) => setEditData({ ...editData, userId: e.target.value })}
-                          placeholder="Author ID"
-                          className="w-full"
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                              <span>
+                                {editData.userId
+                                  ? userList.find((u) => u.id === editData.userId)?.label || "—"
+                                  : "[Aucun]"}
+                              </span>
+                              <ChevronDown className="h-3 w-3 opacity-50" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+                            <DropdownMenuItem
+                              onClick={() => setEditData({ ...editData, userId: "" })}
+                              className={editData.userId === "" ? "bg-accent" : ""}
+                            >
+                              [Aucun]
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {userList.map((item) => (
+                              <DropdownMenuItem
+                                key={item.id}
+                                onClick={() => setEditData({ ...editData, userId: item.id })}
+                                className={editData.userId === item.id ? "bg-accent" : ""}
+                              >
+                                {item.label}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       ) : (
                         event.author?.name || event.author?.id || "—"
                       )}
                     </td>
-                    <td className="p-3 text-zinc-600 dark:text-zinc-300">
+                    <td className="p-3">
                       {editingId === event.id ? (
-                        <Input
-                          value={editData.partPlaceId as string || ""}
-                          onChange={(e) => setEditData({ ...editData, partPlaceId: e.target.value })}
-                          placeholder="Place ID"
-                          className="w-full"
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                              <span>
+                                {editData.partPlaceId
+                                  ? partPlaceList.find((pp) => pp.id === editData.partPlaceId)?.label || "—"
+                                  : "[Aucun]"}
+                              </span>
+                              <ChevronDown className="h-3 w-3 opacity-50" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+                            <DropdownMenuItem
+                              onClick={() => setEditData({ ...editData, partPlaceId: "" })}
+                              className={editData.partPlaceId === "" ? "bg-accent" : ""}
+                            >
+                              [Aucun]
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {partPlaceList.map((item) => (
+                              <DropdownMenuItem
+                                key={item.id}
+                                onClick={() => setEditData({ ...editData, partPlaceId: item.id })}
+                                className={editData.partPlaceId === item.id ? "bg-accent" : ""}
+                              >
+                                {item.label}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       ) : (
                         event.place?.name || event.place?.id || "—"
                       )}
                     </td>
-                    <td className="p-3 text-zinc-600 dark:text-zinc-300">
+                    <td className="p-3">
                       {editingId === event.id ? (
-                        <Input
-                          value={editData.terminalId as string || ""}
-                          onChange={(e) => setEditData({ ...editData, terminalId: e.target.value })}
-                          placeholder="Terminal ID"
-                          className="w-full"
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                              <span>
+                                {editData.terminalId
+                                  ? terminalList.find((t) => t.id === editData.terminalId)?.label || "—"
+                                  : "[Aucun]"}
+                              </span>
+                              <ChevronDown className="h-3 w-3 opacity-50" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+                            <DropdownMenuItem
+                              onClick={() => setEditData({ ...editData, terminalId: "" })}
+                              className={editData.terminalId === "" ? "bg-accent" : ""}
+                            >
+                              [Aucun]
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {terminalList.map((item) => (
+                              <DropdownMenuItem
+                                key={item.id}
+                                onClick={() => setEditData({ ...editData, terminalId: item.id })}
+                                className={editData.terminalId === item.id ? "bg-accent" : ""}
+                              >
+                                {item.label}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       ) : (
                         event.terminal?.name || event.terminal?.id || "—"
                       )}
@@ -520,36 +702,136 @@ export default function PartEventsTestPanel() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Part ID (optional)</label>
-                <Input
-                  value={createData.partId as string || ""}
-                  onChange={(e) => setCreateData({ ...createData, partId: e.target.value })}
-                  placeholder="Part ID"
-                />
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Part (optional)</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                      <span>
+                        {createData.partId
+                          ? partList.find((p) => p.id === createData.partId)?.label || "—"
+                          : "[Aucun]"}
+                      </span>
+                      <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+                    <DropdownMenuItem
+                      onClick={() => setCreateData({ ...createData, partId: "" })}
+                      className={createData.partId === "" ? "bg-accent" : ""}
+                    >
+                      [Aucun]
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {partList.map((item) => (
+                      <DropdownMenuItem
+                        key={item.id}
+                        onClick={() => setCreateData({ ...createData, partId: item.id })}
+                        className={createData.partId === item.id ? "bg-accent" : ""}
+                      >
+                        {item.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Author ID (optional)</label>
-                <Input
-                  value={createData.userId as string || ""}
-                  onChange={(e) => setCreateData({ ...createData, userId: e.target.value })}
-                  placeholder="Author ID"
-                />
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Author (optional)</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                      <span>
+                        {createData.userId
+                          ? userList.find((u) => u.id === createData.userId)?.label || "—"
+                          : "[Aucun]"}
+                      </span>
+                      <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+                    <DropdownMenuItem
+                      onClick={() => setCreateData({ ...createData, userId: "" })}
+                      className={createData.userId === "" ? "bg-accent" : ""}
+                    >
+                      [Aucun]
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {userList.map((item) => (
+                      <DropdownMenuItem
+                        key={item.id}
+                        onClick={() => setCreateData({ ...createData, userId: item.id })}
+                        className={createData.userId === item.id ? "bg-accent" : ""}
+                      >
+                        {item.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Place ID (optional)</label>
-                <Input
-                  value={createData.partPlaceId as string || ""}
-                  onChange={(e) => setCreateData({ ...createData, partPlaceId: e.target.value })}
-                  placeholder="Place ID"
-                />
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Place (optional)</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                      <span>
+                        {createData.partPlaceId
+                          ? partPlaceList.find((pp) => pp.id === createData.partPlaceId)?.label || "—"
+                          : "[Aucun]"}
+                      </span>
+                      <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+                    <DropdownMenuItem
+                      onClick={() => setCreateData({ ...createData, partPlaceId: "" })}
+                      className={createData.partPlaceId === "" ? "bg-accent" : ""}
+                    >
+                      [Aucun]
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {partPlaceList.map((item) => (
+                      <DropdownMenuItem
+                        key={item.id}
+                        onClick={() => setCreateData({ ...createData, partPlaceId: item.id })}
+                        className={createData.partPlaceId === item.id ? "bg-accent" : ""}
+                      >
+                        {item.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Terminal ID (optional)</label>
-                <Input
-                  value={createData.terminalId as string || ""}
-                  onChange={(e) => setCreateData({ ...createData, terminalId: e.target.value })}
-                  placeholder="Terminal ID"
-                />
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Terminal (optional)</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                      <span>
+                        {createData.terminalId
+                          ? terminalList.find((t) => t.id === createData.terminalId)?.label || "—"
+                          : "[Aucun]"}
+                      </span>
+                      <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
+                    <DropdownMenuItem
+                      onClick={() => setCreateData({ ...createData, terminalId: "" })}
+                      className={createData.terminalId === "" ? "bg-accent" : ""}
+                    >
+                      [Aucun]
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {terminalList.map((item) => (
+                      <DropdownMenuItem
+                        key={item.id}
+                        onClick={() => setCreateData({ ...createData, terminalId: item.id })}
+                        className={createData.terminalId === item.id ? "bg-accent" : ""}
+                      >
+                        {item.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
             <DialogFooter>
