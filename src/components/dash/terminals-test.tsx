@@ -214,10 +214,6 @@ export default function TerminalsTestPanel() {
     }
   };
 
-  const handleCancelDelete = (open: boolean) => {
-    if (!open) setDeleteConfirmId(null);
-  };
-
   const handleCreateClick = () => {
     setCreateData({
       name: "",
@@ -425,7 +421,7 @@ export default function TerminalsTestPanel() {
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
-                          <Dialog open={deleteConfirmId === terminal.id} onOpenChange={handleCancelDelete}>
+                          <Dialog open={deleteConfirmId === terminal.id} onOpenChange={(open) => open ? setDeleteConfirmId(terminal.id) : setDeleteConfirmId(null)}>
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"

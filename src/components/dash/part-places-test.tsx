@@ -151,10 +151,6 @@ export default function PartPlacesTestPanel() {
     }
   };
 
-  const handleCancelDelete = (open: boolean) => {
-    if (!open) setDeleteConfirmId(null);
-  };
-
   const handleCreateClick = () => {
     setCreateData({
       name: "",
@@ -362,7 +358,7 @@ export default function PartPlacesTestPanel() {
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
-                          <Dialog open={deleteConfirmId === partPlace.id} onOpenChange={handleCancelDelete}>
+                          <Dialog open={deleteConfirmId === partPlace.id} onOpenChange={(open) => open ? setDeleteConfirmId(partPlace.id) : setDeleteConfirmId(null)}>
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"

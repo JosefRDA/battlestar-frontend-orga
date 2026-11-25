@@ -204,7 +204,8 @@ export default function PartEventsTestPanel() {
             (event.place
               ? `${event.place.name}(${event.place.type})`.toLowerCase().includes(term)
               : false) ||
-            (event.terminal?.name.toLowerCase().includes(term) ?? false)
+            (event.terminal?.name.toLowerCase().includes(term) ?? false) ||
+            (event.createdAt?.toLowerCase().includes(term) ?? false)
         )
       );
     }
@@ -276,10 +277,6 @@ export default function PartEventsTestPanel() {
     }
   };
 
-  const handleCancelDelete = (open: boolean) => {
-    if (!open) setDeleteConfirmId(null);
-  };
-
   const handleCreateClick = () => {
     setCreateData({
       partEventType: "creation",
@@ -339,7 +336,7 @@ export default function PartEventsTestPanel() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <Input
             type="text"
-            placeholder="Search part events by type, health, id..."
+            placeholder="Search part events by type, health, id, date..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -379,13 +376,14 @@ export default function PartEventsTestPanel() {
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Author</th>
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Place</th>
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Terminal</th>
+                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Timestamp Création</th>
                 <th className="text-right p-3 font-medium text-zinc-500 dark:text-zinc-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={9} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     <div className="flex items-center justify-center gap-2">
                       <Loader2 className="animate-spin h-5 w-5" />
                       Loading part events...
@@ -394,7 +392,7 @@ export default function PartEventsTestPanel() {
                 </tr>
               ) : filteredPartEvents.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={9} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     {searchTerm ? "No part events match your search" : "No part events found"}
                   </td>
                 </tr>
@@ -587,6 +585,9 @@ export default function PartEventsTestPanel() {
                         event.terminal?.name || "—"
                       )}
                     </td>
+                    <td className="p-3">
+                      {event.createdAt ? new Date(event.createdAt).toLocaleString() : "—"}
+                    </td>
                     <td className="p-3 text-right">
                       {editingId === event.id ? (
                         <div className="flex items-center justify-end gap-2">
@@ -620,7 +621,7 @@ export default function PartEventsTestPanel() {
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
-                          <Dialog open={deleteConfirmId === event.id} onOpenChange={handleCancelDelete}>
+                          <Dialog open={deleteConfirmId === event.id} onOpenChange={(open) => open ? setDeleteConfirmId(event.id) : setDeleteConfirmId(null)}>
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"

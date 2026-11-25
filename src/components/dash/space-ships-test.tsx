@@ -153,10 +153,6 @@ export default function SpaceShipsTestPanel() {
     }
   };
 
-  const handleCancelDelete = (open: boolean) => {
-    if (!open) setDeleteConfirmId(null);
-  };
-
   const handleCreateClick = () => {
     setCreateData({
       name: "",
@@ -195,9 +191,6 @@ export default function SpaceShipsTestPanel() {
       name: "",
     });
   };
-
-  const formatTerminals = (terminals: Terminal[] | undefined) =>
-    terminals?.map(t => t.name).join(", ") || "—";
 
   return (
     <Card className="w-full">
@@ -252,14 +245,13 @@ export default function SpaceShipsTestPanel() {
               <tr className="border-b border-zinc-200 dark:border-zinc-700">
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">ID</th>
                 <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Name</th>
-                                <th className="text-left p-3 font-medium text-zinc-500 dark:text-zinc-400">Terminals</th>
                 <th className="text-right p-3 font-medium text-zinc-500 dark:text-zinc-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={3} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     <div className="flex items-center justify-center gap-2">
                       <Loader2 className="animate-spin h-5 w-5" />
                       Loading space ships...
@@ -268,7 +260,7 @@ export default function SpaceShipsTestPanel() {
                 </tr>
               ) : filteredSpaceShips.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                  <td colSpan={3} className="text-center p-8 text-zinc-500 dark:text-zinc-400">
                     {searchTerm ? "No space ships match your search" : "No space ships found"}
                   </td>
                 </tr>
@@ -296,9 +288,6 @@ export default function SpaceShipsTestPanel() {
                       ) : (
                         <span className="font-medium text-zinc-900 dark:text-white">{ship.name}</span>
                       )}
-                    </td>
-                    <td className="p-3 text-zinc-600 dark:text-zinc-300 text-xs">
-                      {formatTerminals(ship.terminals)}
                     </td>
                     <td className="p-3 text-right">
                       {editingId === ship.id ? (
@@ -333,7 +322,7 @@ export default function SpaceShipsTestPanel() {
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
-                          <Dialog open={deleteConfirmId === ship.id} onOpenChange={handleCancelDelete}>
+                          <Dialog open={deleteConfirmId === ship.id} onOpenChange={(open) => open ? setDeleteConfirmId(ship.id) : setDeleteConfirmId(null)}>
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"
