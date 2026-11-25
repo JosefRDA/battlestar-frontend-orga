@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, ChevronDown } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, ChevronDown, Copy, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -91,6 +91,17 @@ export default function TerminalsTestPanel() {
     spaceShipId: "",
   });
   const [spaceships, setSpaceships] = useState<Spaceship[]>([]);
+  const [copiedField, setCopiedField] = useState<{type: 'id' | 'name' | 'user_agent'; value: string} | null>(null);
+
+  const handleCopy = async (value: string, type: 'id' | 'name' | 'user_agent') => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField({ type, value });
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   // Fetch spaceships on mount
   const fetchSpaceships = async () => {
@@ -346,34 +357,79 @@ export default function TerminalsTestPanel() {
                     className="border-b border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
-                      {editingId === terminal.id ? (
-                        <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-xs">{terminal.id}</span>
-                      ) : (
-                        terminal.id
-                      )}
+                      <div className="flex items-center gap-1">
+                        {editingId === terminal.id ? (
+                          <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-xs">{terminal.id}</span>
+                        ) : (
+                          terminal.id
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(terminal.id, 'id')}
+                          aria-label="Copy ID"
+                        >
+                          {copiedField?.type === 'id' && copiedField?.value === terminal.id ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      {editingId === terminal.id ? (
-                        <Input
-                          value={editData.name as string}
-                          onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                          className="w-full"
-                          autoFocus
-                        />
-                      ) : (
-                        terminal.name
-                      )}
+                      <div className="flex items-center gap-1">
+                        {editingId === terminal.id ? (
+                          <Input
+                            value={editData.name as string}
+                            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                            className="w-full"
+                            autoFocus
+                          />
+                        ) : (
+                          terminal.name
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(terminal.name, 'name')}
+                          aria-label="Copy Name"
+                        >
+                          {copiedField?.type === 'name' && copiedField?.value === terminal.name ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      {editingId === terminal.id ? (
-                        <Input
-                          value={editData.userAgent as string}
-                          onChange={(e) => setEditData({ ...editData, userAgent: e.target.value })}
-                          className="w-full"
-                        />
-                      ) : (
-                        terminal.userAgent
-                      )}
+                      <div className="flex items-center gap-1">
+                        {editingId === terminal.id ? (
+                          <Input
+                            value={editData.userAgent as string}
+                            onChange={(e) => setEditData({ ...editData, userAgent: e.target.value })}
+                            className="w-full"
+                          />
+                        ) : (
+                          terminal.userAgent
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(terminal.userAgent, 'user_agent')}
+                          aria-label="Copy User Agent"
+                        >
+                          {copiedField?.type === 'user_agent' && copiedField?.value === terminal.userAgent ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
                       {editingId === terminal.id ? (

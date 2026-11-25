@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, Copy, Check } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
@@ -45,6 +45,17 @@ export default function PartPlacesTestPanel() {
     name: "",
     type: "Monte",
   });
+  const [copiedField, setCopiedField] = useState<{type: 'id' | 'name' | 'type'; value: string} | null>(null);
+
+  const handleCopy = async (value: string, type: 'id' | 'name' | 'type') => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField({ type, value });
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   // Fetch part places on mount
   useEffect(() => {
@@ -272,7 +283,22 @@ export default function PartPlacesTestPanel() {
                     className="border-b border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
-                      {partPlace.id}
+                      <div className="flex items-center gap-1">
+                        <span>{partPlace.id}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(partPlace.id, 'id')}
+                          aria-label="Copy ID"
+                        >
+                          {copiedField?.type === 'id' && copiedField?.value === partPlace.id ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
                       {editingId === partPlace.id ? (
@@ -284,7 +310,22 @@ export default function PartPlacesTestPanel() {
                           placeholder="Part place name"
                         />
                       ) : (
-                        <span className="font-medium text-zinc-900 dark:text-white">{partPlace.name}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium text-zinc-900 dark:text-white">{partPlace.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(partPlace.name, 'name')}
+                            aria-label="Copy Name"
+                          >
+                            {copiedField?.type === 'name' && copiedField?.value === partPlace.name ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
                       )}
                     </td>
                     <td className="p-3">
@@ -311,18 +352,33 @@ export default function PartPlacesTestPanel() {
                           </div>
                         </div>
                       ) : (
-                        <span className="text-zinc-600 dark:text-zinc-300">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                            partPlace.type === "Monte"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                              : partPlace.type === "Reserve"
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                              : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"
-                          }`}
-                          >
-                            {partPlace.type}
+                        <div className="flex items-center gap-1">
+                          <span className="text-zinc-600 dark:text-zinc-300">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                              partPlace.type === "Monte"
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                                : partPlace.type === "Reserve"
+                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"
+                            }`}
+                            >
+                              {partPlace.type}
+                            </span>
                           </span>
-                        </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(partPlace.type, 'type')}
+                            aria-label="Copy Type"
+                          >
+                            {copiedField?.type === 'type' && copiedField?.value === partPlace.type ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
                       )}
                     </td>
                     <td className="p-3 text-right">

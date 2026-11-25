@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Edit2, Trash2, Loader2, Save, Plus, ChevronDown } from "lucide-react";
+import { Edit2, Trash2, Loader2, Save, Plus, ChevronDown, Copy, Check } from "lucide-react";
 
 const SystemSelect = ({ value, onChange, systems }: { value: string; onChange: (systemId: string) => void; systems: System[] }) => {
   const currentSystem = systems.find((s) => s.id === value);
@@ -79,6 +79,8 @@ interface SystemsResponse {
   data: System[];
 }
 
+interface CopiedField { type: 'id' | 'name' | 'description' | 'system', value: string }
+
 export default function PartTypesTestPanel() {
   const [partTypes, setPartTypes] = useState<PartType[]>([]);
   const [filteredPartTypes, setFilteredPartTypes] = useState<PartType[]>([]);
@@ -93,6 +95,17 @@ export default function PartTypesTestPanel() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createData, setCreateData] = useState({ name: "", description: "", systemId: "" });
+  const [copiedField, setCopiedField] = useState<CopiedField | null>(null);
+
+  const handleCopy = async (value: string, type: 'id' | 'name' | 'description' | 'system') => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField({ type, value });
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   const fetchSystems = async () => {
     try {
@@ -234,12 +247,61 @@ export default function PartTypesTestPanel() {
                 const system = systems.find((s) => s.id === pt.systemId);
                 return (
                   <tr key={pt.id} className="border-b">
-                    <td className="p-2 font-mono">{pt.id}</td>
-                    <td className="p-2">
-                      {editingId === pt.id ? <Input value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} /> : pt.name}
+                    <td className="p-2 font-mono flex items-center gap-1">
+                      {pt.id}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                        onClick={() => handleCopy(pt.id, 'id')}
+                        aria-label="Copy ID"
+                      >
+                        {copiedField?.type === 'id' && copiedField?.value === pt.id ? (
+                          <Check className="h-3.5 w-3.5 text-green-500" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
                     </td>
                     <td className="p-2">
-                      {editingId === pt.id ? <Input value={editData.description} onChange={(e) => setEditData({...editData, description: e.target.value})} /> : pt.description}
+                      {editingId === pt.id ? <Input value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} /> : (
+                        <div className="flex items-center gap-1">
+                          <span>{pt.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(pt.name, 'name')}
+                            aria-label="Copy Name"
+                          >
+                            {copiedField?.type === 'name' && copiedField?.value === pt.name ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-2">
+                      {editingId === pt.id ? <Input value={editData.description} onChange={(e) => setEditData({...editData, description: e.target.value})} /> : (
+                        <div className="flex items-center gap-1">
+                          <span className="text-zinc-600 dark:text-zinc-300">{pt.description}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(pt.description, 'description')}
+                            aria-label="Copy Description"
+                          >
+                            {copiedField?.type === 'description' && copiedField?.value === pt.description ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
+                      )}
                     </td>
                     <td className="p-2">
                       {editingId === pt.id ? (
@@ -249,7 +311,22 @@ export default function PartTypesTestPanel() {
                           systems={systems}
                         />
                       ) : (
-                        system?.name || "—"
+                        <div className="flex items-center gap-1">
+                          <span className="text-zinc-600 dark:text-zinc-300">{system?.name || "—"}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(system?.name || "—", 'system')}
+                            aria-label="Copy System"
+                          >
+                            {copiedField?.type === 'system' && copiedField?.value === (system?.name || "—") ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
                       )}
                     </td>
                     <td className="p-2 text-right">

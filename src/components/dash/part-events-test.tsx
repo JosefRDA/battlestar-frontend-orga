@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, Copy, Check } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
@@ -107,6 +107,17 @@ export default function PartEventsTestPanel() {
     partHealth: 0,
   });
   const [partList, setPartList] = useState<PartListItem[]>([]);
+  const [copiedField, setCopiedField] = useState<{type: 'id' | 'type' | 'health' | 'part' | 'author' | 'place' | 'terminal' | 'timestamp'; value: string} | null>(null);
+
+  const handleCopy = async (value: string, type: 'id' | 'type' | 'health' | 'part' | 'author' | 'place' | 'terminal' | 'timestamp') => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField({ type, value });
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
   const [userList, setUserList] = useState<UserListItem[]>([]);
   const [partPlaceList, setPartPlaceList] = useState<PartPlaceListItem[]>([]);
   const [terminalList, setTerminalList] = useState<TerminalListItem[]>([]);
@@ -403,190 +414,310 @@ export default function PartEventsTestPanel() {
                     className="border-b border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
-                      {editingId === event.id ? (
-                        <span className="text-zinc-400">{event.id}</span>
-                      ) : (
-                        event.id
-                      )}
-                    </td>
-                    <td className="p-3">
-                      {editingId === event.id ? (
-                        <select
-                          value={editData.partEventType as PartEventType}
-                          onChange={(e) => setEditData({ ...editData, partEventType: e.target.value as PartEventType })}
-                          className="w-full p-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800"
+                      <div className="flex items-center gap-1">
+                        {editingId === event.id ? (
+                          <span className="text-zinc-400">{event.id}</span>
+                        ) : (
+                          event.id
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(event.id, 'id')}
+                          aria-label="Copy ID"
                         >
-                          <option value="creation">creation</option>
-                          <option value="destruction">destruction</option>
-                          <option value="changement_place">changement_place</option>
-                          <option value="scan">scan</option>
-                          <option value="evenement_systeme">evenement_systeme</option>
-                          <option value="changement_sante">changement_sante</option>
-                        </select>
-                      ) : (
-                        <span className="capitalize">{event.partEventType.replace("_", " ")}</span>
-                      )}
+                          {copiedField?.type === 'id' && copiedField?.value === event.id ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      {editingId === event.id ? (
-                        <Input
-                          type="number"
-                          value={editData.partHealth ?? 0}
-                          onChange={(e) => setEditData({ ...editData, partHealth: parseInt(e.target.value) || 0 })}
-                          className="w-full"
-                        />
-                      ) : (
-                        event.partHealth
-                      )}
+                      <div className="flex items-center gap-1">
+                        {editingId === event.id ? (
+                          <select
+                            value={editData.partEventType as PartEventType}
+                            onChange={(e) => setEditData({ ...editData, partEventType: e.target.value as PartEventType })}
+                            className="w-full p-1 border border-zinc-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800"
+                          >
+                            <option value="creation">creation</option>
+                            <option value="destruction">destruction</option>
+                            <option value="changement_place">changement_place</option>
+                            <option value="scan">scan</option>
+                            <option value="evenement_systeme">evenement_systeme</option>
+                            <option value="changement_sante">changement_sante</option>
+                          </select>
+                        ) : (
+                          <span className="capitalize">{event.partEventType.replace("_", " ")}</span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(event.partEventType.replace("_", " "), 'type')}
+                          aria-label="Copy Type"
+                        >
+                          {copiedField?.type === 'type' && copiedField?.value === event.partEventType.replace("_", " ") ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      {editingId === event.id ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
-                              <span>
-                                {editData.partId
-                                  ? partList.find((p) => p.id === editData.partId)?.label || "—"
-                                  : "[Aucun]"}
-                              </span>
-                              <ChevronDown className="h-3 w-3 opacity-50" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
-                            <DropdownMenuItem
-                              onClick={() => setEditData({ ...editData, partId: "" })}
-                              className={editData.partId === "" ? "bg-accent" : ""}
-                            >
-                              [Aucun]
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {partList.map((item) => (
+                      <div className="flex items-center gap-1">
+                        {editingId === event.id ? (
+                          <Input
+                            type="number"
+                            value={editData.partHealth ?? 0}
+                            onChange={(e) => setEditData({ ...editData, partHealth: parseInt(e.target.value) || 0 })}
+                            className="w-full"
+                          />
+                        ) : (
+                          event.partHealth
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(String(event.partHealth), 'health')}
+                          aria-label="Copy Health"
+                        >
+                          {copiedField?.type === 'health' && copiedField?.value === String(event.partHealth) ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex items-center gap-1">
+                        {editingId === event.id ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                                <span>
+                                  {editData.partId
+                                    ? partList.find((p) => p.id === editData.partId)?.label || "—"
+                                    : "[Aucun]"}
+                                </span>
+                                <ChevronDown className="h-3 w-3 opacity-50" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
                               <DropdownMenuItem
-                                key={item.id}
-                                onClick={() => setEditData({ ...editData, partId: item.id })}
-                                className={editData.partId === item.id ? "bg-accent" : ""}
+                                onClick={() => setEditData({ ...editData, partId: "" })}
+                                className={editData.partId === "" ? "bg-accent" : ""}
                               >
-                                {item.label}
+                                [Aucun]
                               </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      ) : (
-                        event.part
-                          ? `${event.part.id} ${event.part.partType?.name || ""}`.trim()
-                          : "—"
-                      )}
+                              <DropdownMenuSeparator />
+                              {partList.map((item) => (
+                                <DropdownMenuItem
+                                  key={item.id}
+                                  onClick={() => setEditData({ ...editData, partId: item.id })}
+                                  className={editData.partId === item.id ? "bg-accent" : ""}
+                                >
+                                  {item.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : (
+                          event.part
+                            ? `${event.part.id} ${event.part.partType?.name || ""}`.trim()
+                            : "—"
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(`${event.part?.id || ""} ${event.part?.partType?.name || ""}`.trim() || "—", 'part')}
+                          aria-label="Copy Part"
+                        >
+                          {copiedField?.type === 'part' && copiedField?.value === (`${event.part?.id || ""} ${event.part?.partType?.name || ""}`.trim() || "—") ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      {editingId === event.id ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
-                              <span>
-                                {editData.userId
-                                  ? userList.find((u) => u.id === editData.userId)?.label || "—"
-                                  : "[Aucun]"}
-                              </span>
-                              <ChevronDown className="h-3 w-3 opacity-50" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
-                            <DropdownMenuItem
-                              onClick={() => setEditData({ ...editData, userId: "" })}
-                              className={editData.userId === "" ? "bg-accent" : ""}
-                            >
-                              [Aucun]
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {userList.map((item) => (
+                      <div className="flex items-center gap-1">
+                        {editingId === event.id ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                                <span>
+                                  {editData.userId
+                                    ? userList.find((u) => u.id === editData.userId)?.label || "—"
+                                    : "[Aucun]"}
+                                </span>
+                                <ChevronDown className="h-3 w-3 opacity-50" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
                               <DropdownMenuItem
-                                key={item.id}
-                                onClick={() => setEditData({ ...editData, userId: item.id })}
-                                className={editData.userId === item.id ? "bg-accent" : ""}
+                                onClick={() => setEditData({ ...editData, userId: "" })}
+                                className={editData.userId === "" ? "bg-accent" : ""}
                               >
-                                {item.label}
+                                [Aucun]
                               </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      ) : (
-                        event.author?.name || "—"
-                      )}
+                              <DropdownMenuSeparator />
+                              {userList.map((item) => (
+                                <DropdownMenuItem
+                                  key={item.id}
+                                  onClick={() => setEditData({ ...editData, userId: item.id })}
+                                  className={editData.userId === item.id ? "bg-accent" : ""}
+                                >
+                                  {item.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : (
+                          event.author?.name || "—"
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(event.author?.name || "—", 'author')}
+                          aria-label="Copy Author"
+                        >
+                          {copiedField?.type === 'author' && copiedField?.value === (event.author?.name || "—") ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      {editingId === event.id ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
-                              <span>
-                                {editData.partPlaceId
-                                  ? partPlaceList.find((pp) => pp.id === editData.partPlaceId)?.label || "—"
-                                  : "[Aucun]"}
-                              </span>
-                              <ChevronDown className="h-3 w-3 opacity-50" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
-                            <DropdownMenuItem
-                              onClick={() => setEditData({ ...editData, partPlaceId: "" })}
-                              className={editData.partPlaceId === "" ? "bg-accent" : ""}
-                            >
-                              [Aucun]
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {partPlaceList.map((item) => (
+                      <div className="flex items-center gap-1">
+                        {editingId === event.id ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                                <span>
+                                  {editData.partPlaceId
+                                    ? partPlaceList.find((pp) => pp.id === editData.partPlaceId)?.label || "—"
+                                    : "[Aucun]"}
+                                </span>
+                                <ChevronDown className="h-3 w-3 opacity-50" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
                               <DropdownMenuItem
-                                key={item.id}
-                                onClick={() => setEditData({ ...editData, partPlaceId: item.id })}
-                                className={editData.partPlaceId === item.id ? "bg-accent" : ""}
+                                onClick={() => setEditData({ ...editData, partPlaceId: "" })}
+                                className={editData.partPlaceId === "" ? "bg-accent" : ""}
                               >
-                                {item.label}
+                                [Aucun]
                               </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      ) : (
-                        event.place ? `${event.place.name}(${event.place.type})` : "—"
-                      )}
+                              <DropdownMenuSeparator />
+                              {partPlaceList.map((item) => (
+                                <DropdownMenuItem
+                                  key={item.id}
+                                  onClick={() => setEditData({ ...editData, partPlaceId: item.id })}
+                                  className={editData.partPlaceId === item.id ? "bg-accent" : ""}
+                                >
+                                  {item.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : (
+                          event.place ? `${event.place.name}(${event.place.type})` : "—"
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(event.place ? `${event.place.name}(${event.place.type})` : "—", 'place')}
+                          aria-label="Copy Place"
+                        >
+                          {copiedField?.type === 'place' && copiedField?.value === (event.place ? `${event.place.name}(${event.place.type})` : "—") ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      {editingId === event.id ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
-                              <span>
-                                {editData.terminalId
-                                  ? terminalList.find((t) => t.id === editData.terminalId)?.label || "—"
-                                  : "[Aucun]"}
-                              </span>
-                              <ChevronDown className="h-3 w-3 opacity-50" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
-                            <DropdownMenuItem
-                              onClick={() => setEditData({ ...editData, terminalId: "" })}
-                              className={editData.terminalId === "" ? "bg-accent" : ""}
-                            >
-                              [Aucun]
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {terminalList.map((item) => (
+                      <div className="flex items-center gap-1">
+                        {editingId === event.id ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between h-8 px-2 py-1 text-xs gap-1">
+                                <span>
+                                  {editData.terminalId
+                                    ? terminalList.find((t) => t.id === editData.terminalId)?.label || "—"
+                                    : "[Aucun]"}
+                                </span>
+                                <ChevronDown className="h-3 w-3 opacity-50" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="start" sideOffset={4}>
                               <DropdownMenuItem
-                                key={item.id}
-                                onClick={() => setEditData({ ...editData, terminalId: item.id })}
-                                className={editData.terminalId === item.id ? "bg-accent" : ""}
+                                onClick={() => setEditData({ ...editData, terminalId: "" })}
+                                className={editData.terminalId === "" ? "bg-accent" : ""}
                               >
-                                {item.label}
+                                [Aucun]
                               </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      ) : (
-                        event.terminal?.name || "—"
-                      )}
+                              <DropdownMenuSeparator />
+                              {terminalList.map((item) => (
+                                <DropdownMenuItem
+                                  key={item.id}
+                                  onClick={() => setEditData({ ...editData, terminalId: item.id })}
+                                  className={editData.terminalId === item.id ? "bg-accent" : ""}
+                                >
+                                  {item.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : (
+                          event.terminal?.name || "—"
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(event.terminal?.name || "—", 'terminal')}
+                          aria-label="Copy Terminal"
+                        >
+                          {copiedField?.type === 'terminal' && copiedField?.value === (event.terminal?.name || "—") ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
-                      {event.createdAt ? new Date(event.createdAt).toLocaleString() : "—"}
+                      <div className="flex items-center gap-1">
+                        {event.createdAt ? new Date(event.createdAt).toLocaleString() : "—"}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(event.createdAt ? new Date(event.createdAt).toLocaleString() : "—", 'timestamp')}
+                          aria-label="Copy Timestamp"
+                        >
+                          {copiedField?.type === 'timestamp' && copiedField?.value === (event.createdAt ? new Date(event.createdAt).toLocaleString() : "—") ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3 text-right">
                       {editingId === event.id ? (

@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, ChevronDown } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, ChevronDown, Copy, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -111,6 +111,17 @@ export default function PartsNewTestPanel() {
     partQuality: 1,
     partTypeId: "",
   });
+  const [copiedField, setCopiedField] = useState<{type: 'id' | 'rifd' | 'partType'; value: string} | null>(null);
+
+  const handleCopy = async (value: string, type: 'id' | 'rifd' | 'partType') => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField({ type, value });
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   const fetchPartTypes = async () => {
     try {
@@ -359,22 +370,52 @@ export default function PartsNewTestPanel() {
                     className="border-b border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
-                      {editingId === part.id ? (
-                        <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-xs">{part.id}</span>
-                      ) : (
-                        <span>{part.id}</span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {editingId === part.id ? (
+                          <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-xs">{part.id}</span>
+                        ) : (
+                          <span>{part.id}</span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(part.id, 'id')}
+                          aria-label="Copy ID"
+                        >
+                          {copiedField?.type === 'id' && copiedField?.value === part.id ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
-                      {editingId === part.id ? (
-                        <Input
-                          value={editData.rifd as string}
-                          onChange={(e) => setEditData({ ...editData, rifd: e.target.value })}
-                          className="w-full"
-                        />
-                      ) : (
-                        <span>{part.rifd}</span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {editingId === part.id ? (
+                          <Input
+                            value={editData.rifd as string}
+                            onChange={(e) => setEditData({ ...editData, rifd: e.target.value })}
+                            className="w-full"
+                          />
+                        ) : (
+                          <span>{part.rifd}</span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(part.rifd, 'rifd')}
+                          aria-label="Copy RIFD"
+                        >
+                          {copiedField?.type === 'rifd' && copiedField?.value === part.rifd ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
                       {editingId === part.id ? (
@@ -390,15 +431,30 @@ export default function PartsNewTestPanel() {
                       )}
                     </td>
                     <td className="p-3">
-                      {editingId === part.id ? (
-                        <PartTypeSelect
-                          value={editData.partTypeId as string}
-                          onChange={(partTypeId) => setEditData({ ...editData, partTypeId })}
-                          partTypes={partTypes}
-                        />
-                      ) : (
-                        <span className="text-zinc-600 dark:text-zinc-300">{part.partType?.name || "—"}</span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {editingId === part.id ? (
+                          <PartTypeSelect
+                            value={editData.partTypeId as string}
+                            onChange={(partTypeId) => setEditData({ ...editData, partTypeId })}
+                            partTypes={partTypes}
+                          />
+                        ) : (
+                          <span className="text-zinc-600 dark:text-zinc-300">{part.partType?.name || "—"}</span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(part.partType?.name || "—", 'partType')}
+                          aria-label="Copy Part Type"
+                        >
+                          {copiedField?.type === 'partType' && copiedField?.value === (part.partType?.name || "—") ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3 text-right">
                       {editingId === part.id ? (

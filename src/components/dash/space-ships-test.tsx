@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, Copy, Check } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
@@ -50,6 +50,17 @@ export default function SpaceShipsTestPanel() {
   const [createData, setCreateData] = useState<Partial<SpaceShip>>({
     name: "",
   });
+  const [copiedField, setCopiedField] = useState<{type: 'id' | 'name'; value: string} | null>(null);
+
+  const handleCopy = async (value: string, type: 'id' | 'name') => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField({ type, value });
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   // Fetch space ships on mount
   useEffect(() => {
@@ -271,11 +282,53 @@ export default function SpaceShipsTestPanel() {
                     className="border-b border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
                   >
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
-                      {editingId === ship.id ? (
-                        <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-xs">{ship.id}</span>
-                      ) : (
-                        <span>{ship.id}</span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {editingId === ship.id ? (
+                          <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-xs">{ship.id}</span>
+                        ) : (
+                          ship.id
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(ship.id, 'id')}
+                          aria-label="Copy ID"
+                        >
+                          {copiedField?.type === 'id' && copiedField?.value === ship.id ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex items-center gap-1">
+                        {editingId === ship.id ? (
+                          <Input
+                            value={editData.name as string}
+                            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                            className="w-full"
+                            autoFocus
+                          />
+                        ) : (
+                          <span className="font-medium text-zinc-900 dark:text-white">{ship.name}</span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          onClick={() => handleCopy(ship.name, 'name')}
+                          aria-label="Copy Name"
+                        >
+                          {copiedField?.type === 'name' && copiedField?.value === ship.name ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="p-3">
                       {editingId === ship.id ? (
