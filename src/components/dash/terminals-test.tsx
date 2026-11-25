@@ -214,8 +214,8 @@ export default function TerminalsTestPanel() {
     }
   };
 
-  const handleCancelDelete = () => {
-    setDeleteConfirmId(null);
+  const handleCancelDelete = (open: boolean) => {
+    if (!open) setDeleteConfirmId(null);
   };
 
   const handleCreateClick = () => {
@@ -444,7 +444,7 @@ export default function TerminalsTestPanel() {
                                 </DialogDescription>
                               </DialogHeader>
                               <DialogFooter>
-                                <Button variant="outline" onClick={handleCancelDelete}>
+                                <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
                                   Cancel
                                 </Button>
                                 <Button

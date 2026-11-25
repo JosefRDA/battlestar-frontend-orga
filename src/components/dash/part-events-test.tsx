@@ -122,7 +122,7 @@ export default function PartEventsTestPanel() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE}/part-events`);
+      const res = await fetch(`${API_BASE}/part-events?full=true`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: PartEventsResponse = await res.json();
       setPartEvents(data.data || []);
@@ -195,10 +195,15 @@ export default function PartEventsTestPanel() {
             event.partEventType.toLowerCase().includes(term) ||
             event.partHealth.toString().toLowerCase().includes(term) ||
             event.id.toLowerCase().includes(term) ||
-            (event.part?.rifd.toLowerCase().includes(term) ?? false) ||
-            (event.part?.partType?.name.toLowerCase().includes(term) ?? false) ||
+            (event.part
+              ? `${event.part.id} ${event.part.partType?.name || ""}`
+                  .toLowerCase()
+                  .includes(term)
+              : false) ||
             (event.author?.name.toLowerCase().includes(term) ?? false) ||
-            (event.place?.name.toLowerCase().includes(term) ?? false) ||
+            (event.place
+              ? `${event.place.name}(${event.place.type})`.toLowerCase().includes(term)
+              : false) ||
             (event.terminal?.name.toLowerCase().includes(term) ?? false)
         )
       );
@@ -271,8 +276,8 @@ export default function PartEventsTestPanel() {
     }
   };
 
-  const handleCancelDelete = () => {
-    setDeleteConfirmId(null);
+  const handleCancelDelete = (open: boolean) => {
+    if (!open) setDeleteConfirmId(null);
   };
 
   const handleCreateClick = () => {
@@ -469,7 +474,9 @@ export default function PartEventsTestPanel() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       ) : (
-                        event.part?.rifd || event.part?.id || "—"
+                        event.part
+                          ? `${event.part.id} ${event.part.partType?.name || ""}`.trim()
+                          : "—"
                       )}
                     </td>
                     <td className="p-3">
@@ -505,7 +512,7 @@ export default function PartEventsTestPanel() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       ) : (
-                        event.author?.name || event.author?.id || "—"
+                        event.author?.name || "—"
                       )}
                     </td>
                     <td className="p-3">
@@ -541,7 +548,7 @@ export default function PartEventsTestPanel() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       ) : (
-                        event.place?.name || event.place?.id || "—"
+                        event.place ? `${event.place.name}(${event.place.type})` : "—"
                       )}
                     </td>
                     <td className="p-3">
@@ -577,7 +584,7 @@ export default function PartEventsTestPanel() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       ) : (
-                        event.terminal?.name || event.terminal?.id || "—"
+                        event.terminal?.name || "—"
                       )}
                     </td>
                     <td className="p-3 text-right">
@@ -632,7 +639,7 @@ export default function PartEventsTestPanel() {
                                 </DialogDescription>
                               </DialogHeader>
                               <DialogFooter>
-                                <Button variant="outline" onClick={handleCancelDelete}>
+                                <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
                                   Cancel
                                 </Button>
                                 <Button

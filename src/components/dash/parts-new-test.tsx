@@ -230,8 +230,8 @@ export default function PartsNewTestPanel() {
     }
   };
 
-  const handleCancelDelete = () => {
-    setDeleteConfirmId(null);
+  const handleCancelDelete = (open: boolean) => {
+    if (!open) setDeleteConfirmId(null);
   };
 
   const handleCreateClick = () => {
@@ -456,7 +456,7 @@ export default function PartsNewTestPanel() {
                                 </DialogDescription>
                               </DialogHeader>
                               <DialogFooter>
-                                <Button variant="outline" onClick={handleCancelDelete}>
+                                <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
                                   Cancel
                                 </Button>
                                 <Button
