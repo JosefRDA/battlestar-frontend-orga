@@ -491,19 +491,21 @@ export default function PartEventsTestPanel() {
                         ) : (
                           event.partHealth
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(String(event.partHealth), 'health')}
-                          aria-label="Copy Health"
-                        >
-                          {copiedField?.type === 'health' && copiedField?.value === String(event.partHealth) ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== event.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(String(event.partHealth), 'health')}
+                            aria-label="Copy Health"
+                          >
+                            {copiedField?.type === 'health' && copiedField?.value === String(event.partHealth) ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">
@@ -544,19 +546,21 @@ export default function PartEventsTestPanel() {
                             ? `${event.part.id} ${event.part.partType?.name || ""}`.trim()
                             : "—"
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(`${event.part?.id || ""} ${event.part?.partType?.name || ""}`.trim() || "—", 'part')}
-                          aria-label="Copy Part"
-                        >
-                          {copiedField?.type === 'part' && copiedField?.value === (`${event.part?.id || ""} ${event.part?.partType?.name || ""}`.trim() || "—") ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== event.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(`${event.part?.id || ""} ${event.part?.partType?.name || ""}`.trim() || "—", 'part')}
+                            aria-label="Copy Part"
+                          >
+                            {copiedField?.type === 'part' && copiedField?.value === (`${event.part?.id || ""} ${event.part?.partType?.name || ""}`.trim() || "—") ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">
@@ -595,19 +599,21 @@ export default function PartEventsTestPanel() {
                         ) : (
                           event.author?.name || "—"
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(event.author?.name || "—", 'author')}
-                          aria-label="Copy Author"
-                        >
-                          {copiedField?.type === 'author' && copiedField?.value === (event.author?.name || "—") ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== event.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(event.author?.name || "—", 'author')}
+                            aria-label="Copy Author"
+                          >
+                            {copiedField?.type === 'author' && copiedField?.value === (event.author?.name || "—") ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">
@@ -646,19 +652,21 @@ export default function PartEventsTestPanel() {
                         ) : (
                           event.place ? `${event.place.name}(${event.place.type})` : "—"
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(event.place ? `${event.place.name}(${event.place.type})` : "—", 'place')}
-                          aria-label="Copy Place"
-                        >
-                          {copiedField?.type === 'place' && copiedField?.value === (event.place ? `${event.place.name}(${event.place.type})` : "—") ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== event.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(event.place ? `${event.place.name}(${event.place.type})` : "—", 'place')}
+                            aria-label="Copy Place"
+                          >
+                            {copiedField?.type === 'place' && copiedField?.value === (event.place ? `${event.place.name}(${event.place.type})` : "—") ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">

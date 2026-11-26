@@ -288,19 +288,21 @@ export default function SpaceShipsTestPanel() {
                         ) : (
                           ship.id
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(ship.id, 'id')}
-                          aria-label="Copy ID"
-                        >
-                          {copiedField?.type === 'id' && copiedField?.value === ship.id ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== ship.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(ship.id, 'id')}
+                            aria-label="Copy ID"
+                          >
+                            {copiedField?.type === 'id' && copiedField?.value === ship.id ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">
@@ -315,32 +317,22 @@ export default function SpaceShipsTestPanel() {
                         ) : (
                           <span className="font-medium text-zinc-900 dark:text-white">{ship.name}</span>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(ship.name, 'name')}
-                          aria-label="Copy Name"
-                        >
-                          {copiedField?.type === 'name' && copiedField?.value === ship.name ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== ship.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(ship.name, 'name')}
+                            aria-label="Copy Name"
+                          >
+                            {copiedField?.type === 'name' && copiedField?.value === ship.name ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
-                    </td>
-                    <td className="p-3">
-                      {editingId === ship.id ? (
-                        <Input
-                          value={editData.name as string}
-                          onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                          className="w-full"
-                          autoFocus
-                        />
-                      ) : (
-                        <span className="font-medium text-zinc-900 dark:text-white">{ship.name}</span>
-                      )}
                     </td>
                     <td className="p-3 text-right">
                       {editingId === ship.id ? (

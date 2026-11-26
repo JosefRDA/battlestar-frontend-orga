@@ -376,19 +376,21 @@ export default function PartsNewTestPanel() {
                         ) : (
                           <span>{part.id}</span>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(part.id, 'id')}
-                          aria-label="Copy ID"
-                        >
-                          {copiedField?.type === 'id' && copiedField?.value === part.id ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== part.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(part.id, 'id')}
+                            aria-label="Copy ID"
+                          >
+                            {copiedField?.type === 'id' && copiedField?.value === part.id ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3 font-mono text-xs text-zinc-600 dark:text-zinc-300">
@@ -402,19 +404,21 @@ export default function PartsNewTestPanel() {
                         ) : (
                           <span>{part.rifd}</span>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(part.rifd, 'rifd')}
-                          aria-label="Copy RIFD"
-                        >
-                          {copiedField?.type === 'rifd' && copiedField?.value === part.rifd ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== part.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(part.rifd, 'rifd')}
+                            aria-label="Copy RIFD"
+                          >
+                            {copiedField?.type === 'rifd' && copiedField?.value === part.rifd ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">
@@ -452,19 +456,21 @@ export default function PartsNewTestPanel() {
                         ) : (
                           <span className="text-zinc-600 dark:text-zinc-300">{part.partType?.name || "—"}</span>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(part.partType?.name || "—", 'partType')}
-                          aria-label="Copy Part Type"
-                        >
-                          {copiedField?.type === 'partType' && copiedField?.value === (part.partType?.name || "—") ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== part.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(part.partType?.name || "—", 'partType')}
+                            aria-label="Copy Part Type"
+                          >
+                            {copiedField?.type === 'partType' && copiedField?.value === (part.partType?.name || "—") ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3 text-right">

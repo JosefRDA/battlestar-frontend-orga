@@ -363,19 +363,21 @@ export default function TerminalsTestPanel() {
                         ) : (
                           terminal.id
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(terminal.id, 'id')}
-                          aria-label="Copy ID"
-                        >
-                          {copiedField?.type === 'id' && copiedField?.value === terminal.id ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== terminal.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(terminal.id, 'id')}
+                            aria-label="Copy ID"
+                          >
+                            {copiedField?.type === 'id' && copiedField?.value === terminal.id ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">
@@ -390,19 +392,21 @@ export default function TerminalsTestPanel() {
                         ) : (
                           terminal.name
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(terminal.name, 'name')}
-                          aria-label="Copy Name"
-                        >
-                          {copiedField?.type === 'name' && copiedField?.value === terminal.name ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== terminal.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(terminal.name, 'name')}
+                            aria-label="Copy Name"
+                          >
+                            {copiedField?.type === 'name' && copiedField?.value === terminal.name ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">
@@ -416,19 +420,21 @@ export default function TerminalsTestPanel() {
                         ) : (
                           terminal.userAgent
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
-                          onClick={() => handleCopy(terminal.userAgent, 'user_agent')}
-                          aria-label="Copy User Agent"
-                        >
-                          {copiedField?.type === 'user_agent' && copiedField?.value === terminal.userAgent ? (
-                            <Check className="h-3.5 w-3.5 text-green-500" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        {editingId !== terminal.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => handleCopy(terminal.userAgent, 'user_agent')}
+                            aria-label="Copy User Agent"
+                          >
+                            {copiedField?.type === 'user_agent' && copiedField?.value === terminal.userAgent ? (
+                              <Check className="h-3.5 w-3.5 text-green-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </td>
                     <td className="p-3">
