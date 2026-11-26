@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, ChevronDown, Copy, Check } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, ChevronDown, Copy, Check, Maximize } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -108,7 +108,7 @@ export default function PartsNewTestPanel() {
   const [creating, setCreating] = useState(false);
   const [createData, setCreateData] = useState<Partial<Part>>({
     rifd: "",
-    partQuality: 1,
+    partQuality: 100,
     partTypeId: "",
   });
   const [copiedField, setCopiedField] = useState<{type: 'id' | 'rifd' | 'partType'; value: string} | null>(null);
@@ -244,7 +244,7 @@ export default function PartsNewTestPanel() {
   const handleCreateClick = () => {
     setCreateData({
       rifd: "",
-      partQuality: 1,
+      partQuality: 100,
       partTypeId: "",
     });
     setCreateModalOpen(true);
@@ -284,7 +284,7 @@ export default function PartsNewTestPanel() {
     setCreateModalOpen(false);
     setCreateData({
       rifd: "",
-      partQuality: 1,
+      partQuality: 100,
       partTypeId: "",
     });
   };
@@ -419,13 +419,24 @@ export default function PartsNewTestPanel() {
                     </td>
                     <td className="p-3">
                       {editingId === part.id ? (
-                        <Input
-                          type="number"
-                          value={editData.partQuality as number}
-                          onChange={(e) => setEditData({ ...editData, partQuality: parseInt(e.target.value) || 0 })}
-                          className="w-full"
-                          min="0"
-                        />
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            value={editData.partQuality as number}
+                            onChange={(e) => setEditData({ ...editData, partQuality: Math.min(parseInt(e.target.value) || 0, 100) })}
+                            className="w-full"
+                            min="0"
+                            max="100"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                            onClick={() => setEditData({ ...editData, partQuality: 100 })}
+                          >
+                            <Maximize className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       ) : (
                         <span className="text-zinc-600 dark:text-zinc-300">{part.partQuality}</span>
                       )}
@@ -566,9 +577,10 @@ export default function PartsNewTestPanel() {
                 <Input
                   type="number"
                   value={createData.partQuality as number}
-                  onChange={(e) => setCreateData({ ...createData, partQuality: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => setCreateData({ ...createData, partQuality: Math.min(parseInt(e.target.value) || 0, 100) })}
                   placeholder="1"
                   min="0"
+                  max="100"
                 />
               </div>
               <div className="space-y-2">

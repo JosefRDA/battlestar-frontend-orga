@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, Copy, Check } from "lucide-react";
+import { Edit2, Trash2, Search, Loader2, Save, X, CheckCircle, AlertCircle, Plus, Copy, Check, Maximize } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
@@ -104,7 +104,7 @@ export default function PartEventsTestPanel() {
   const [creating, setCreating] = useState(false);
   const [createData, setCreateData] = useState<Partial<PartEvent>>({
     partEventType: "creation",
-    partHealth: 0,
+    partHealth: 100,
   });
   const [partList, setPartList] = useState<PartListItem[]>([]);
   const [copiedField, setCopiedField] = useState<{type: 'id' | 'type' | 'health' | 'part' | 'author' | 'place' | 'terminal' | 'timestamp'; value: string} | null>(null);
@@ -291,7 +291,7 @@ export default function PartEventsTestPanel() {
   const handleCreateClick = () => {
     setCreateData({
       partEventType: "creation",
-      partHealth: 0,
+      partHealth: 100,
     });
     setCreateModalOpen(true);
   };
@@ -325,7 +325,7 @@ export default function PartEventsTestPanel() {
     setCreateModalOpen(false);
     setCreateData({
       partEventType: "creation",
-      partHealth: 0,
+      partHealth: 100,
     });
   };
 
@@ -471,12 +471,23 @@ export default function PartEventsTestPanel() {
                     <td className="p-3">
                       <div className="flex items-center gap-1">
                         {editingId === event.id ? (
-                          <Input
-                            type="number"
-                            value={editData.partHealth ?? 0}
-                            onChange={(e) => setEditData({ ...editData, partHealth: parseInt(e.target.value) || 0 })}
-                            className="w-full"
-                          />
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              value={editData.partHealth ?? 0}
+                              onChange={(e) => setEditData({ ...editData, partHealth: Math.min(parseInt(e.target.value) || 0, 100) })}
+                              className="w-full"
+                              max="100"
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                              onClick={() => setEditData({ ...editData, partHealth: 100 })}
+                            >
+                              <Maximize className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
                         ) : (
                           event.partHealth
                         )}
@@ -836,8 +847,9 @@ export default function PartEventsTestPanel() {
                 <Input
                   type="number"
                   value={createData.partHealth ?? 0}
-                  onChange={(e) => setCreateData({ ...createData, partHealth: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => setCreateData({ ...createData, partHealth: Math.min(parseInt(e.target.value) || 0, 100) })}
                   placeholder="0"
+                  max="100"
                 />
               </div>
               <div className="space-y-2">
