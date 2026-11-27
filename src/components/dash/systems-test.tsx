@@ -54,7 +54,7 @@ const testCases: TestCase[] = [
   {
     id: "create",
     title: "POST /systems",
-    description: "Create a new system (requires: name, order)",
+    description: "Create a new system (requires: name, order, optional: spaceShipId)",
     method: "POST",
     endpoint: "",
     needsId: false,
@@ -62,12 +62,13 @@ const testCases: TestCase[] = [
     bodyFields: [
       { key: "name", type: "text", label: "Name", placeholder: "Navigation" },
       { key: "order", type: "number", label: "Order", placeholder: "1" },
+      { key: "spaceShipId", type: "text", label: "SpaceShip ID", placeholder: "Optional" },
     ],
   },
   {
     id: "patch",
     title: "PATCH /systems/:id",
-    description: "Partial update system",
+    description: "Partial update system (spaceShipId optional)",
     method: "PATCH",
     endpoint: "/:id",
     needsId: true,
@@ -75,12 +76,13 @@ const testCases: TestCase[] = [
     bodyFields: [
       { key: "name", type: "text", label: "Name", placeholder: "Navigation" },
       { key: "order", type: "number", label: "Order", placeholder: "1" },
+      { key: "spaceShipId", type: "text", label: "SpaceShip ID", placeholder: "Optional" },
     ],
   },
   {
     id: "put",
     title: "PUT /systems/:id",
-    description: "Full update system (requires: name, order)",
+    description: "Full update system (requires: name, order, optional: spaceShipId)",
     method: "PUT",
     endpoint: "/:id",
     needsId: true,
@@ -88,6 +90,7 @@ const testCases: TestCase[] = [
     bodyFields: [
       { key: "name", type: "text", label: "Name", placeholder: "Navigation" },
       { key: "order", type: "number", label: "Order", placeholder: "1" },
+      { key: "spaceShipId", type: "text", label: "SpaceShip ID", placeholder: "Optional" },
     ],
   },
   {

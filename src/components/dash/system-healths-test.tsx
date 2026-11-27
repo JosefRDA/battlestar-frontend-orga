@@ -136,7 +136,7 @@ function CreateSystemHealth() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const body: Record<string, unknown> = {
-      health: parseInt(health, 10),
+      heath: parseInt(health, 10),
       systemId,
     }
     call("POST /system-healths", () =>
@@ -151,7 +151,7 @@ function CreateSystemHealth() {
   return (
     <TestCard
       title="POST /system-healths"
-      description="Create system health record (health and systemId required)"
+      description="Create system health record (heath and systemId required, maintenance defaults to false)"
     >
       <form onSubmit={handleSubmit} className="space-y-2 max-w-md">
         <div>
@@ -203,7 +203,7 @@ function PatchSystemHealth() {
     e.preventDefault()
     if (!id) return
     const body: Record<string, unknown> = {}
-    if (health) body.health = parseInt(health, 10)
+    if (health) body.heath = parseInt(health, 10)
     if (systemId) body.systemId = systemId
     call(`PATCH /system-healths/${id}`, () =>
       fetch(`${API_BASE}/${id}`, {
@@ -276,7 +276,7 @@ function PutSystemHealth() {
     e.preventDefault()
     if (!id || !health || !systemId) return
     const body: Record<string, unknown> = {
-      health: parseInt(health, 10),
+      heath: parseInt(health, 10),
       systemId,
     }
     call(`PUT /system-healths/${id}`, () =>
@@ -291,7 +291,7 @@ function PutSystemHealth() {
   return (
     <TestCard
       title="PUT /system-healths/:id"
-      description="Full update - all fields required (health and systemId mandatory)"
+      description="Full update - all fields required (heath and systemId mandatory)"
     >
       <form onSubmit={handleSubmit} className="space-y-2 max-w-md">
         <div>
